@@ -1,5 +1,5 @@
 #include "Grid.hpp"
-#include "ColorNodes.hpp"
+#include "Cells.hpp"
 #include <iostream>
 
 #pragma once
@@ -8,7 +8,7 @@ class FlowGrid : public Grid {
 public:
     FlowGrid(u_short rows, u_short cols, u_short cellSize, std::vector<ColorNodes> colorNodes)
         : rows(rows), cols(cols), cellSize(cellSize), colorNodes(std::move(colorNodes)) {
-        cells.resize(rows, std::vector<sf::RectangleShape>(cols));
+        cells.resize(rows, std::vector<Cell*>(cols, nullptr));
         initializeShapes();
     }
 
@@ -23,13 +23,8 @@ public:
     void draw(sf::RenderWindow& window) {
         for (u_short row = 0; row < rows; ++row) {
             for (u_short col = 0; col < cols; ++col) {
-                window.draw(cells[row][col]);
+                cells[row][col]->draw_cell(window);
             }
-        }
-
-        for (auto& node : colorNodes) {
-            window.draw(node.circle1);
-            window.draw(node.circle2);
         }
     }
 
@@ -41,16 +36,6 @@ public:
     }
 
     void initializeShapes() {
-        for (u_short row = 0; row < rows; ++row) {
-            for (u_short col = 0; col < cols; ++col) {
-                cells[row][col] = sf::RectangleShape();
-                cells[row][col].setSize(sf::Vector2f(cellSize, cellSize));
-                cells[row][col].setPosition(getCellPos(row, col));
-                cells[row][col].setFillColor(sf::Color::White);
-                cells[row][col].setOutlineThickness(gridLineThickness);
-                cells[row][col].setOutlineColor(sf::Color::Green);
-            }
-        }
 
         for (auto& node : colorNodes) {
             if (node.row1 == node.row2 && node.col1 == node.col2) {
@@ -71,6 +56,16 @@ public:
             node.circle2.setFillColor(node.color);
             node.circle2.setPosition(getCellPos(node.row2, node.col2));
             node.circle2.setRadius(cellSize / 2);
+
+            cells[node.row1][node.col1] = new SourceCell(node.row1, node.col1, getCellPos(node.row1, node.col1), cellSize, gridLineThickness, node.circle1);
+            cells[node.row2][node.col2] = new SourceCell(node.row2, node.col2, getCellPos(node.row2, node.col2), cellSize, gridLineThickness, node.circle2);
+        }
+
+        for (u_short row = 0; row < rows; ++row) {
+            for (u_short col = 0; col < cols; ++col) {
+                if (cells[row][col] != nullptr) continue;
+                cells[row][col] = new Cell(row, col, getCellPos(row, col), cellSize, gridLineThickness);
+            }
         }
     }
 
@@ -78,25 +73,47 @@ public:
         this->cellSize = cellSize;
         for (u_short row = 0; row < rows; ++row) {
             for (u_short col = 0; col < cols; ++col) {
-                cells[row][col].setSize(sf::Vector2f(cellSize, cellSize));
-                cells[row][col].setPosition(getCellPos(row, col));
+                cells[row][col]->shape.setSize(sf::Vector2f(cellSize, cellSize));
+                cells[row][col]->shape.setPosition(getCellPos(row, col));
             }
         }
 
         for (auto& node : colorNodes) {
-            node.circle1.setPosition(getCellPos(node.row1, node.col1));
             node.circle1.setRadius(cellSize / 2);
+            node.circle1.setPosition(getCellPos(node.row1, node.col1));
 
-            node.circle2.setPosition(getCellPos(node.row2, node.col2));
             node.circle2.setRadius(cellSize / 2);
+            node.circle2.setPosition(getCellPos(node.row2, node.col2));
         }
     };
+
+    void processClick(int x, int y) {
+        
+        if (y / (cellSize + gridLineThickness) >= rows || x / (cellSize + gridLineThickness) >= cols) {
+            return;
+        }
+
+        Cell* cell = cells[y / (cellSize + gridLineThickness)][x / (cellSize + gridLineThickness)];
+        if (cell->colorNode) {
+            std::cout << "Clicked on a color node at (" << cell->row << ", " << cell->col << ")" << std::endl;
+        } else {
+            std::cout << "Clicked on a regular cell at (" << cell->row << ", " << cell->col << ")" << std::endl;
+        }
+    }
+
+    ~FlowGrid() {
+        for (u_short row = 0; row < rows; ++row) {
+            for (u_short col = 0; col < cols; ++col) {
+                delete cells[row][col];
+            }
+        }
+    }
 
 private:
     u_short cellSize = 0;
     u_short gridLineThickness = 5;
     u_short rows = 0;
     u_short cols = 0;
-    std::vector<std::vector<sf::RectangleShape>> cells = {};
+    std::vector<std::vector<Cell*>> cells = {};
     std::vector<ColorNodes> colorNodes = {};
 };

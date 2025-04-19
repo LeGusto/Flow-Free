@@ -27,6 +27,13 @@ int main()
             {
                 window.close();
             }
+            if (const auto* mouseButtonPressed = event->getIf<sf::Event::MouseButtonPressed>())
+{
+            if (mouseButtonPressed->button == sf::Mouse::Button::Left)
+            {
+                grid.processClick(mouseButtonPressed->position.x, mouseButtonPressed->position.y);
+            }
+}
         }
 
         window.clear();
