@@ -8,7 +8,7 @@ int main()
     window.setVerticalSyncEnabled(true);
 
     std::vector<ColorNodes> colorNodes = {
-        {0, 0, 0, 1, sf::Color::Red},
+        {10, 0, 0, 1, sf::Color::Red},
         {1, 5, 1, 1, sf::Color::Blue},
         {2, 7, 2, 5, sf::Color::Green},
         {0, 4, 3, 1, sf::Color::Yellow},
