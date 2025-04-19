@@ -87,18 +87,48 @@ public:
         }
     };
 
-    void processClick(int x, int y) {
+    void makePath(int x, int y) {
         
         if (y / (cellSize + gridLineThickness) >= rows || x / (cellSize + gridLineThickness) >= cols) {
             return;
         }
 
         Cell* cell = cells[y / (cellSize + gridLineThickness)][x / (cellSize + gridLineThickness)];
-        if (cell->colorNode) {
-            std::cout << "Clicked on a color node at (" << cell->row << ", " << cell->col << ")" << std::endl;
-        } else {
-            std::cout << "Clicked on a regular cell at (" << cell->row << ", " << cell->col << ")" << std::endl;
+
+        if (isDrawing) {
+            if (path.size() > 0) {
+                if (abs(path.back()->row - cell->row) + abs(path.back()->col - cell->col) == 1) {
+                    if (cell->colorNode) {
+                        if (currentColor != cell->getColor()) {
+                            return;
+                        } else {
+                            std::cout<<"Done!"<<std::endl;
+                            isDrawing = false;
+                            path.clear();
+                            return;
+                        }
+                    }
+                    if (cell->getColor() == sf::Color::Black) {
+                        cell->setColor(currentColor);
+                        path.push_back(cells[cell->row][cell->col]);
+                    } 
+
+                }
+            }
+        } else if (cell->colorNode) {
+            isDrawing = true;
+            currentColor = cell->getColor();
+            path.push_back(cells[cell->row][cell->col]);
         }
+
+    }
+
+    void destroyPath() {
+        for (auto& cell : path) {
+            cell->setColor(sf::Color::Black);
+        }
+        path.clear();
+        isDrawing = false;
     }
 
     ~FlowGrid() {
@@ -116,4 +146,10 @@ private:
     u_short cols = 0;
     std::vector<std::vector<Cell*>> cells = {};
     std::vector<ColorNodes> colorNodes = {};
+
+    bool isDrawing = false;
+    sf::Color currentColor = sf::Color::Red;
+    std::vector<Cell*> path = {};
+
+
 };

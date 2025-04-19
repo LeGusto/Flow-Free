@@ -31,7 +31,10 @@ int main()
 {
             if (mouseButtonPressed->button == sf::Mouse::Button::Left)
             {
-                grid.processClick(mouseButtonPressed->position.x, mouseButtonPressed->position.y);
+                grid.makePath(mouseButtonPressed->position.x, mouseButtonPressed->position.y);
+            } else if (mouseButtonPressed->button == sf::Mouse::Button::Right)
+            {
+                grid.destroyPath();
             }
 }
         }

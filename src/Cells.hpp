@@ -10,9 +10,10 @@ struct Cell {
     sf::RectangleShape shape = sf::RectangleShape();
     sf::Color color = sf::Color::Black;
     
-    void virtual draw_cell(sf::RenderWindow& window) {
-        window.draw(shape);
-    }
+    void virtual draw_cell(sf::RenderWindow& window) { window.draw(shape); }
+    sf::Color virtual getColor() const { return color; };
+    void setColor(sf::Color color) { this->color = color; shape.setFillColor(color); }
+
 
     bool colorNode = false;
 
@@ -47,7 +48,9 @@ struct SourceCell : public Cell {
         }
     }
 
-    
+    sf::Color getColor() const override {
+        return circle->getFillColor();
+    }
 };
 
 // Store pairs of color nodes in the grid
