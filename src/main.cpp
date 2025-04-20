@@ -13,9 +13,8 @@ int main()
         {2, 7, 2, 5, sf::Color::Green},
         {0, 4, 3, 1, sf::Color::Yellow},
         {9, 9, 4, 1, sf::Color::Magenta},
-        {5, 0, 5, 1, sf::Color::Cyan}
-    };
-    
+        {5, 0, 5, 1, sf::Color::Cyan}};
+
     FlowGrid grid = FlowGrid(10, 10, 50, colorNodes);
     int cnt = 0;
 
@@ -27,16 +26,26 @@ int main()
             {
                 window.close();
             }
-            if (const auto* mouseButtonPressed = event->getIf<sf::Event::MouseButtonPressed>())
-{
-            if (mouseButtonPressed->button == sf::Mouse::Button::Left)
+
+            if (const auto *mouseButtonPressed = event->getIf<sf::Event::MouseButtonPressed>())
             {
-                grid.makePath(mouseButtonPressed->position.x, mouseButtonPressed->position.y);
-            } else if (mouseButtonPressed->button == sf::Mouse::Button::Right)
-            {
-                grid.destroyPath();
+                if (mouseButtonPressed->button == sf::Mouse::Button::Left)
+                {
+                    grid.makePath(mouseButtonPressed->position.x, mouseButtonPressed->position.y);
+                }
+                else if (mouseButtonPressed->button == sf::Mouse::Button::Right)
+                {
+                    grid.destroyPath();
+                }
             }
-}
+
+            if (const auto *mouseMoved = event->getIf<sf::Event::MouseMoved>())
+            {
+                if (grid.isDrawing())
+                {
+                    grid.makePath(mouseMoved->position.x, mouseMoved->position.y);
+                }
+            }
         }
 
         window.clear();
