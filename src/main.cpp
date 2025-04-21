@@ -15,7 +15,7 @@ int main()
         {9, 9, 4, 1, sf::Color::Magenta},
         {5, 0, 5, 1, sf::Color::Cyan}};
 
-    FlowGrid grid = FlowGrid(10, 10, 50, colorNodes);
+    FlowGrid grid = FlowGrid(10, 10, 50, colorNodes, window);
     int cnt = 0;
 
     while (window.isOpen())

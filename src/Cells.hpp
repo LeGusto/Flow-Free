@@ -13,8 +13,14 @@ struct Cell
     sf::Color color = Defaults::CELL_COLOR;
     int path = -1; // Which path it belongs to
 
-    void virtual draw_cell(sf::RenderWindow &window) { window.draw(shape); }
-    sf::Color virtual getColor() const { return color; };
+    void virtual draw_cell(sf::RenderWindow &window)
+    {
+        window.draw(shape);
+    }
+    sf::Color virtual getColor() const
+    {
+        return color;
+    };
     void virtual setColor(sf::Color color)
     {
         this->color = color;
@@ -23,6 +29,10 @@ struct Cell
     void virtual setOutlineColor(sf::Color color)
     {
         shape.setOutlineColor(color);
+    }
+    void virtual setOrigin(sf::Vector2f origin)
+    {
+        shape.setOrigin(origin);
     }
 
     bool colorNode = false;
@@ -60,15 +70,21 @@ struct SourceCell : public Cell
             window.draw(*circle);
         }
     }
-
     void setColor(sf::Color color) override
     {
         this->color = color;
     }
-
     sf::Color getColor() const override
     {
         return circle->getFillColor();
+    }
+    void setOrigin(sf::Vector2f origin) override
+    {
+        shape.setOrigin(origin);
+        if (circle)
+        {
+            circle->setOrigin(origin);
+        }
     }
 };
 

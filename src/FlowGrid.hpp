@@ -9,9 +9,13 @@
 class FlowGrid : public Grid
 {
 public:
-    FlowGrid(u_short rows, u_short cols, u_short cellSize, std::vector<ColorNodes> colorNodes)
+    FlowGrid(u_short rows, u_short cols, u_short cellSize, std::vector<ColorNodes> colorNodes, sf::RenderWindow &window)
         : rows(rows), cols(cols), cellSize(cellSize), colorNodes(std::move(colorNodes))
     {
+        origin = sf::Vector2f(
+            -(float)(window.getSize().x - (cols * cellSize + (cols + 1) * gridLineThickness)) / 2,
+            -(float)(window.getSize().y - (rows * cellSize + (rows + 1) * gridLineThickness)) / 2);
+
         cells.resize(rows, std::vector<Cell *>(cols, nullptr));
         initializeShapes();
     }
@@ -82,9 +86,11 @@ public:
         {
             for (u_short col = 0; col < cols; ++col)
             {
-                if (cells[row][col] != nullptr)
-                    continue;
-                cells[row][col] = new Cell(row, col, getCellPos(row, col), cellSize, gridLineThickness);
+                if (cells[row][col] == nullptr)
+                {
+                    cells[row][col] = new Cell(row, col, getCellPos(row, col), cellSize, gridLineThickness);
+                }
+                cells[row][col]->setOrigin(origin);
             }
         }
     }
@@ -113,6 +119,8 @@ public:
 
     void makePath(int x, int y)
     {
+        x += origin.x;
+        y += origin.y;
         // Out of bounds
         if (y / (cellSize + gridLineThickness) >= rows || x / (cellSize + gridLineThickness) >= cols)
         {
@@ -160,6 +168,7 @@ private:
     u_short gridLineThickness = Defaults::GRID_LINE_THICKNESS;
     u_short rows = 0;
     u_short cols = 0;
+    sf::Vector2f origin = {-50, -50};
 
     std::vector<std::vector<Cell *>> cells = {};
     std::vector<ColorNodes> colorNodes = {};
