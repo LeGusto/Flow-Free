@@ -1,6 +1,7 @@
 #include <iostream>
 #include <vector>
 #include <SFML/Graphics.hpp>
+#include "Defaults.hpp"
 
 #pragma once
 
@@ -9,8 +10,8 @@ struct Cell
     u_short row = 0;
     u_short col = 0;
     sf::RectangleShape shape = sf::RectangleShape();
-    sf::Color color = sf::Color::Black; // Unmarked color
-    int path = -1;                      // Which path it belongs to
+    sf::Color color = Defaults::CELL_COLOR;
+    int path = -1; // Which path it belongs to
 
     void virtual draw_cell(sf::RenderWindow &window) { window.draw(shape); }
     sf::Color virtual getColor() const { return color; };
@@ -18,6 +19,10 @@ struct Cell
     {
         this->color = color;
         shape.setFillColor(color);
+    }
+    void virtual setOutlineColor(sf::Color color)
+    {
+        shape.setOutlineColor(color);
     }
 
     bool colorNode = false;
@@ -27,10 +32,10 @@ struct Cell
         : row(row), col(col)
     {
         shape.setPosition(position);
-        shape.setFillColor(color);
+        shape.setFillColor(Defaults::CELL_COLOR);
         shape.setSize(sf::Vector2f(cellSize, cellSize));
         shape.setOutlineThickness(gridLineThickness);
-        shape.setOutlineColor(sf::Color(128, 128, 128));
+        shape.setOutlineColor(Defaults::OUTLINE_COLOR);
     }
 };
 
@@ -82,5 +87,5 @@ public:
     const u_short col2 = 0;
     sf::CircleShape circle2;
 
-    const sf::Color color = sf::Color::White;
+    const sf::Color color = Defaults::COLORNODE_COLOR;
 };

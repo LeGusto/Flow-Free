@@ -1,0 +1,15 @@
+#pragma once
+
+#include <SFML/Graphics.hpp>
+
+namespace Defaults
+{
+    constexpr u_short CELL_SIZE = 50;
+    constexpr u_short GRID_LINE_THICKNESS = 5;
+    constexpr u_short ROWS = 10;
+    constexpr u_short COLS = 10;
+
+    const sf::Color CELL_COLOR = sf::Color::Black;
+    const sf::Color OUTLINE_COLOR = sf::Color(128, 128, 128);
+    const sf::Color COLORNODE_COLOR = sf::Color::Black;
+}

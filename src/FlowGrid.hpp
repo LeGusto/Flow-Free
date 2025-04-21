@@ -1,7 +1,9 @@
 #pragma once
+
 #include "Grid.hpp"
 #include "Cells.hpp"
 #include "Path.hpp"
+#include "Defaults.hpp"
 #include <iostream>
 
 class FlowGrid : public Grid
@@ -23,12 +25,19 @@ public:
 
     void draw(sf::RenderWindow &window)
     {
+        Cell *pathHead = path.getLastCell();
         for (u_short row = 0; row < rows; ++row)
         {
             for (u_short col = 0; col < cols; ++col)
             {
+                if (cells[row][col] == pathHead)
+                    continue;
                 cells[row][col]->draw_cell(window);
             }
+        }
+        if (pathHead != nullptr)
+        {
+            pathHead->draw_cell(window);
         }
     }
 
@@ -114,6 +123,14 @@ public:
 
         if (path.isPathDrawing())
         {
+            // Adjust sensitivity of drawing
+            u_short x_pad = abs((cellSize + gridLineThickness) / 2 - x % (cellSize + gridLineThickness));
+            u_short y_pad = abs((cellSize + gridLineThickness) / 2 - y % (cellSize + gridLineThickness));
+            if (x_pad > (cellSize + gridLineThickness) / 3 || y_pad > (cellSize + gridLineThickness) / 3)
+            {
+                return;
+            }
+
             path.addCell(cell);
         }
         else if (cell->colorNode)
@@ -140,9 +157,10 @@ public:
 
 private:
     u_short cellSize = 0;
-    u_short gridLineThickness = 5;
+    u_short gridLineThickness = Defaults::GRID_LINE_THICKNESS;
     u_short rows = 0;
     u_short cols = 0;
+
     std::vector<std::vector<Cell *>> cells = {};
     std::vector<ColorNodes> colorNodes = {};
     Path path;

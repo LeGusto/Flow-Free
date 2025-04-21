@@ -29,24 +29,35 @@ public:
         {
             Cell *lastCell = path.back();
             lastCell->setColor(sf::Color::Black);
+            lastCell->setOutlineColor(sf::Color(128, 128, 128));
+
             path.pop_back();
+        }
+
+        if (!path.empty())
+        {
+            path.back()->setOutlineColor(sf::Color::White);
         }
     }
 
     void clearPath()
     {
-        for (auto &cell : path)
+        while (!path.empty())
         {
-            cell->setColor(sf::Color::Black);
+            shrinkPath();
         }
-        path.clear();
         isDrawing = false;
     }
 
     void extendPath(Cell *cell)
     {
+        if (!path.empty())
+        {
+            path.back()->setOutlineColor(sf::Color(128, 128, 128));
+        }
         path.push_back(cell);
         cell->setColor(currentColor);
+        cell->setOutlineColor(sf::Color::White);
     }
 
     void startPath(Cell *startCell, sf::Color color)
@@ -71,6 +82,8 @@ public:
         {
             cell->path = currentColor.toInteger();
         }
+        if (!path.empty())
+            path.back()->setOutlineColor(sf::Color(128, 128, 128));
         path.clear();
     }
 
@@ -128,6 +141,13 @@ public:
     bool isPathDrawing() const
     {
         return isDrawing;
+    }
+
+    Cell *getLastCell() const
+    {
+        if (path.empty())
+            return nullptr;
+        return path.back();
     }
 
 private:
