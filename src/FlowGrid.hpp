@@ -123,24 +123,44 @@ public:
         x += origin.x;
         y += origin.y;
         // Out of bounds
-        if (y / (cellSize + gridLineThickness) >= rows || x / (cellSize + gridLineThickness) >= cols)
+        if (y / (cellSize + gridLineThickness) >= rows || x / (cellSize + gridLineThickness) >= cols || x < 0 || y < 0)
         {
             return;
         }
 
         Cell *cell = cells[y / (cellSize + gridLineThickness)][x / (cellSize + gridLineThickness)];
+        if (!cell)
+        {
+            std::cerr << "Error: Missing cell at position (" << x << ", " << y << ")." << std::endl;
+            return;
+        }
 
         if (pathMaker.isPathDrawing())
         {
             // Adjust sensitivity of drawing
             u_short x_pad = abs((cellSize + gridLineThickness) / 2 - x % (cellSize + gridLineThickness));
             u_short y_pad = abs((cellSize + gridLineThickness) / 2 - y % (cellSize + gridLineThickness));
-            if (x_pad > (cellSize + gridLineThickness) / 3 || y_pad > (cellSize + gridLineThickness) / 3)
+            if (x_pad > (cellSize + gridLineThickness) * Defaults::PATH_SENSITIVITY || y_pad > (cellSize + gridLineThickness) * Defaults::PATH_SENSITIVITY)
             {
                 return;
             }
 
-            pathMaker.addCell(cell);
+            pathTemp.clear();
+            Cell *prevCell = pathMaker.getLastCell();
+            if (prevCell == nullptr)
+            {
+                std::cerr << "Error: No previous cell found." << std::endl;
+                return;
+            }
+
+            tracePath(cell, prevCell);
+
+            if (pathTemp.empty())
+            {
+                pathTemp.push_back(cell);
+            }
+
+            pathMaker.addCells(pathTemp);
         }
         else if (cell->colorNode)
         {
@@ -148,9 +168,41 @@ public:
         }
     }
 
+    void tracePath(Cell *cell, Cell *prevCell)
+    {
+        if (cell->row == prevCell->row)
+        {
+            for (int c = std::min(cell->col, prevCell->col); c <= std::max(cell->col, prevCell->col); ++c)
+            {
+                pathTemp.push_back(cells[cell->row][c]);
+            }
+            if (cell->col - prevCell->col < 0)
+                reverse(pathTemp.begin(), pathTemp.end());
+        }
+        else if (cell->col == prevCell->col)
+        {
+            for (int r = std::min(cell->row, prevCell->row); r <= std::max(cell->row, prevCell->row); ++r)
+            {
+                pathTemp.push_back(cells[r][cell->col]);
+            }
+            if (cell->row - prevCell->row < 0)
+                reverse(pathTemp.begin(), pathTemp.end());
+        }
+    }
+
     void destroyPath()
     {
         pathMaker.destroyPath();
+    }
+
+    Cell *getCell(int row, int col)
+    {
+        if (row >= rows || col >= cols)
+        {
+            std::cerr << "Error: Cell out of bounds." << std::endl;
+            return nullptr;
+        }
+        return cells[row][col];
     }
 
     ~FlowGrid()
@@ -170,6 +222,7 @@ private:
     u_short rows = 0;
     u_short cols = 0;
     sf::Vector2f origin = {-50, -50};
+    std::vector<Cell *> pathTemp = {};
 
     std::vector<std::vector<Cell *>> cells = {};
     std::vector<ColorNodes> colorNodes = {};
