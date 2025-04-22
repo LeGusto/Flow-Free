@@ -24,7 +24,7 @@ struct Cell
     void virtual setColor(sf::Color color)
     {
         this->color = color;
-        shape.setFillColor(color);
+        // shape.setFillColor(color);
     }
     void virtual setOutlineColor(sf::Color color)
     {

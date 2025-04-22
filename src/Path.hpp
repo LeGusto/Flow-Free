@@ -4,87 +4,161 @@
 #include <map>
 #include "Cells.hpp"
 
-struct pathShape
+struct Path
 {
-    sf::VertexArray line;
+    std::vector<Cell *> cells = {};
+    std::vector<sf::Vertex> line = {};
     sf::Color color;
-};
+    sf::Vector2f *origin = nullptr;
 
-class Path
-{
-public:
-    void resetPath(int color)
+    Path() = default;
+    Path(sf::Vector2f *origin) : origin(origin) {}
+
+    void drawPath(sf::RenderWindow &window)
     {
-        for (auto &cell : allPaths[color])
-        {
-            cell->setColor(sf::Color::Black);
-            cell->path = -1;
-        }
-        allPaths.erase(color);
+        window.draw(&line[0], line.size(), sf::PrimitiveType::TriangleStrip);
     }
 
     void shrinkPath()
     {
-        if (path.size() > 0)
+        if (cells.size() > 0)
         {
-            Cell *lastCell = path.back();
+            Cell *lastCell = cells.back();
             lastCell->setColor(sf::Color::Black);
-            lastCell->setOutlineColor(sf::Color(128, 128, 128));
-
-            path.pop_back();
+            lastCell->setOutlineColor(Defaults::OUTLINE_COLOR);
+            lastCell->path = -1;
+            cells.pop_back();
+            if (!line.empty())
+            {
+                for (int i = 0; i < 5; ++i)
+                {
+                    line.pop_back();
+                }
+            }
         }
 
-        if (!path.empty())
+        if (!cells.empty())
         {
-            path.back()->setOutlineColor(sf::Color::White);
+            cells.back()->setOutlineColor(color);
         }
     }
 
-    void clearPath()
+    void extendLine(Cell *cell, Cell *prevCell)
     {
-        while (!path.empty())
+        if (!cells.empty())
         {
-            shrinkPath();
+            sf::Vertex vertexUp1{
+                sf::Vector2f(-origin->x + prevCell->shape.getPosition().x + cell->shape.getSize().x / 2,
+                             -origin->y + prevCell->shape.getPosition().y + cell->shape.getSize().y / 2),
+                color};
+            sf::Vertex vertexDown1 = vertexUp1;
+            sf::Vertex vertexUp2{
+                sf::Vector2f(-origin->x + cell->shape.getPosition().x + cell->shape.getSize().x / 2,
+                             -origin->y + cell->shape.getPosition().y + cell->shape.getSize().y / 2),
+                color};
+            sf::Vertex vertexDown2 = vertexUp2;
+            sf::Vertex mid = vertexUp1;
+
+            sf::Vector2f mod = {0, 0};
+
+            if (prevCell->col == cell->col)
+            {
+                mid.position.y += cell->shape.getSize().y * (Defaults::PATH_THICKNESS * -(cell->row - prevCell->row));
+                mod.x += cell->shape.getSize().x * Defaults::PATH_THICKNESS;
+            }
+            else
+            {
+                mid.position.x += cell->shape.getSize().x * (Defaults::PATH_THICKNESS * -(cell->col - prevCell->col));
+                mod.y += cell->shape.getSize().y * Defaults::PATH_THICKNESS;
+            }
+            vertexDown1.position.x -= mod.x;
+            vertexDown1.position.y -= mod.y;
+            vertexUp1.position.x += mod.x;
+            vertexUp1.position.y += mod.y;
+            vertexDown2.position.x -= mod.x;
+            vertexDown2.position.y -= mod.y;
+            vertexUp2.position.x += mod.x;
+            vertexUp2.position.y += mod.y;
+            if (cells.size() & 1)
+            {
+                std::swap(vertexUp1, vertexDown1);
+                std::swap(vertexUp2, vertexDown2);
+                std::swap(vertexDown2, vertexUp2);
+                std::swap(vertexUp1, vertexDown1);
+            }
+            line.push_back(std::move(mid));
+            line.push_back(std::move(vertexUp1));
+            line.push_back(std::move(vertexDown1));
+            line.push_back(std::move(vertexUp2));
+            line.push_back(std::move(vertexDown2));
         }
-        isDrawing = false;
     }
 
     void extendPath(Cell *cell)
     {
-        if (!path.empty())
+        Cell *prevCell = nullptr;
+
+        if (!cells.empty())
         {
-            path.back()->setOutlineColor(sf::Color(128, 128, 128));
+            prevCell = cells.back();
+            prevCell->setOutlineColor(sf::Color(128, 128, 128));
         }
-        path.push_back(cell);
-        cell->setColor(currentColor);
-        cell->setOutlineColor(sf::Color::White);
+
+        cells.push_back(cell);
+        cell->path = color.toInteger();
+        cell->setOutlineColor(color);
+        cell->setColor(color);
+
+        if (prevCell != nullptr)
+            extendLine(cell, prevCell);
     }
+
+    void clearPath()
+    {
+        while (!cells.empty())
+        {
+            shrinkPath();
+        }
+    }
+    void resetPath()
+    {
+        cells.back()->setOutlineColor(Defaults::OUTLINE_COLOR);
+        cells.clear();
+        line.clear();
+    }
+};
+
+class PathMaker
+{
+public:
+    PathMaker() = delete; // Must supply origin
+    PathMaker(sf::Vector2f *origin) : origin(origin) {}
 
     void startPath(Cell *startCell, sf::Color color)
     {
-        // Check if the cell is already part of a path and reset it
+        // Check if the cell is already part of a path.cells and reset it
         if (startCell->path != -1)
         {
-            resetPath(startCell->color.toInteger());
+            allPaths[startCell->color.toInteger()].clearPath();
         }
-
+        path.origin = origin;
+        path.color = color;
         isDrawing = true;
-        currentColor = color;
-        path.clear();
-        extendPath(startCell);
+        path.color = color;
+        path.clearPath();
+        path.extendPath(startCell);
     }
 
     void completePath()
     {
         isDrawing = false;
-        allPaths[currentColor.toInteger()] = path;
-        for (auto &cell : path)
+        allPaths[path.color.toInteger()] = path;
+        for (auto &cell : path.cells)
         {
-            cell->path = currentColor.toInteger();
+            cell->path = path.color.toInteger();
         }
-        if (!path.empty())
-            path.back()->setOutlineColor(sf::Color(128, 128, 128));
-        path.clear();
+        // Don't use clearPath, because it sets all path cells to black
+        path.resetPath();
     }
 
     bool addCell(Cell *cell)
@@ -92,45 +166,45 @@ public:
         if (!isDrawing)
             return false;
 
-        if (path.size() > 0)
+        if (path.cells.size() > 0)
         {
-            Cell *lastCell = path.back();
+            Cell *lastCell = path.cells.back();
 
-            // If the cell is already part of the path, shrink it down
+            // If the cell is already part of the path.cells, shrink it down
             if (lastCell != cell)
             {
-                if (std::find(path.begin(), path.end(), cell) != path.end())
+                if (std::find(path.cells.begin(), path.cells.end(), cell) != path.cells.end())
                 {
-                    while (path.back() != cell)
+                    while (path.cells.back() != cell)
                     {
-                        shrinkPath();
+                        path.shrinkPath();
                     }
                     return true;
                 }
             }
 
-            // Ensure the cell is adjacent to the last cell in the path
+            // Ensure the cell is adjacent to the last cell in the path.cells
             if (abs(lastCell->row - cell->row) + abs(lastCell->col - cell->col) == 1)
             {
                 if (cell->colorNode)
                 {
                     // If the cell is a color node, check if it matches the current color
                     // Also check if it isn't the starting cell
-                    if (currentColor != cell->getColor() || cell == path[0])
+                    if (path.color != cell->getColor() || cell == path.cells[0])
                     {
                         return false;
                     }
                     else
                     {
                         // Path is complete
-                        extendPath(cell);
+                        path.extendPath(cell);
                         completePath();
                         return true;
                     }
                 }
                 if (cell->getColor() == sf::Color::Black)
                 {
-                    extendPath(cell);
+                    path.extendPath(cell);
                     return true;
                 }
             }
@@ -145,14 +219,29 @@ public:
 
     Cell *getLastCell() const
     {
-        if (path.empty())
+        if (path.cells.empty())
             return nullptr;
-        return path.back();
+        return path.cells.back();
+    }
+
+    void destroyPath()
+    {
+        path.clearPath();
+        isDrawing = false;
+    }
+
+    void drawPaths(sf::RenderWindow &window)
+    {
+        for (auto &[key, p] : allPaths)
+        {
+            p.drawPath(window);
+        }
+        path.drawPath(window);
     }
 
 private:
     bool isDrawing = false;
-    sf::Color currentColor = sf::Color::Black;
-    std::vector<Cell *> path = {};
-    std::map<int, std::vector<Cell *>> allPaths = {};
+    sf::Vector2f *origin = nullptr;
+    Path path = Path();
+    std::map<int, Path> allPaths = {};
 };

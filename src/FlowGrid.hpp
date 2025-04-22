@@ -25,24 +25,25 @@ public:
     u_short getRows() const override { return rows; }
     u_short getCols() const override { return cols; }
     u_int getGridSize() const override { return (rows + 1) * gridLineThickness + (cols + 1) * gridLineThickness + cellSize * rows * cols; }
-    bool isDrawing() { return path.isPathDrawing(); }
+    bool isDrawing() { return pathMaker.isPathDrawing(); }
 
     void draw(sf::RenderWindow &window)
     {
-        Cell *pathHead = path.getLastCell();
+        Cell *pathMakerHead = pathMaker.getLastCell();
         for (u_short row = 0; row < rows; ++row)
         {
             for (u_short col = 0; col < cols; ++col)
             {
-                if (cells[row][col] == pathHead)
+                if (cells[row][col] == pathMakerHead)
                     continue;
                 cells[row][col]->draw_cell(window);
             }
         }
-        if (pathHead != nullptr)
+        if (pathMakerHead != nullptr)
         {
-            pathHead->draw_cell(window);
+            pathMakerHead->draw_cell(window);
         }
+        pathMaker.drawPaths(window);
     }
 
     sf::Vector2f getCellPos(u_short row, u_short col)
@@ -129,7 +130,7 @@ public:
 
         Cell *cell = cells[y / (cellSize + gridLineThickness)][x / (cellSize + gridLineThickness)];
 
-        if (path.isPathDrawing())
+        if (pathMaker.isPathDrawing())
         {
             // Adjust sensitivity of drawing
             u_short x_pad = abs((cellSize + gridLineThickness) / 2 - x % (cellSize + gridLineThickness));
@@ -139,17 +140,17 @@ public:
                 return;
             }
 
-            path.addCell(cell);
+            pathMaker.addCell(cell);
         }
         else if (cell->colorNode)
         {
-            path.startPath(cell, cell->getColor());
+            pathMaker.startPath(cell, cell->getColor());
         }
     }
 
     void destroyPath()
     {
-        path.clearPath();
+        pathMaker.destroyPath();
     }
 
     ~FlowGrid()
@@ -172,5 +173,5 @@ private:
 
     std::vector<std::vector<Cell *>> cells = {};
     std::vector<ColorNodes> colorNodes = {};
-    Path path;
+    PathMaker pathMaker = PathMaker(&origin);
 };
