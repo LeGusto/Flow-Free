@@ -9,6 +9,7 @@ struct Cell
 {
     u_short row = 0;
     u_short col = 0;
+    bool colorNode = false;
     sf::RectangleShape shape = sf::RectangleShape();
     sf::Color color = Defaults::CELL_COLOR;
     int path = -1; // Which path it belongs to
@@ -34,8 +35,12 @@ struct Cell
     {
         shape.setOrigin(origin);
     }
-
-    bool colorNode = false;
+    void addToPath()
+    {
+        this->path = path;
+        setColor(color);
+        setOutlineColor(color);
+    }
 
     Cell(u_short row, u_short col, sf::Vector2f position,
          u_short cellSize, u_short gridLineThickness)

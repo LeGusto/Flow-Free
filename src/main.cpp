@@ -46,6 +46,15 @@ int main()
                     grid.makePath(mouseMoved->position.x, mouseMoved->position.y);
                 }
             }
+
+            if (const auto *keyPressed = event->getIf<sf::Event::KeyPressed>())
+            {
+                if (keyPressed->scancode == sf::Keyboard::Scancode::Z)
+                {
+                    std::cout << "undoing\n";
+                    grid.undo();
+                }
+            }
         }
 
         window.clear();

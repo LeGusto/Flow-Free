@@ -4,6 +4,7 @@
 #include "Cells.hpp"
 #include "Path.hpp"
 #include "Defaults.hpp"
+#include "ActionManager.hpp"
 #include <iostream>
 
 class FlowGrid : public Grid
@@ -160,7 +161,10 @@ public:
                 pathTemp.push_back(cell);
             }
 
-            pathMaker.addCells(pathTemp);
+            if (pathMaker.addCells(pathTemp) && pathMaker.isPathDrawing() == false)
+            {
+                actionManager.undoAddAction(Action(Action::ADD, pathMaker.getPath(cell->getColor().toInteger())));
+            }
         }
         else if (cell->colorNode)
         {
@@ -168,26 +172,31 @@ public:
         }
     }
 
+    // Get the path from the current cell to the previous cell
     void tracePath(Cell *cell, Cell *prevCell)
     {
+        if (cell->row == prevCell->row && cell->col == prevCell->col)
+        {
+            pathTemp.push_back(cell);
+            return;
+        }
         if (cell->row == prevCell->row)
         {
-            for (int c = std::min(cell->col, prevCell->col); c <= std::max(cell->col, prevCell->col); ++c)
+            int step = (cell->col - prevCell->col) / abs(cell->col - prevCell->col);
+            for (int c = prevCell->col + step; c != cell->col; c += step)
             {
                 pathTemp.push_back(cells[cell->row][c]);
             }
-            if (cell->col - prevCell->col < 0)
-                reverse(pathTemp.begin(), pathTemp.end());
         }
         else if (cell->col == prevCell->col)
         {
-            for (int r = std::min(cell->row, prevCell->row); r <= std::max(cell->row, prevCell->row); ++r)
+            int step = (cell->row - prevCell->row) / abs(cell->row - prevCell->row);
+            for (int r = prevCell->row + step; r != cell->row; r += step)
             {
                 pathTemp.push_back(cells[r][cell->col]);
             }
-            if (cell->row - prevCell->row < 0)
-                reverse(pathTemp.begin(), pathTemp.end());
         }
+        pathTemp.push_back(cell);
     }
 
     void destroyPath()
@@ -203,6 +212,11 @@ public:
             return nullptr;
         }
         return cells[row][col];
+    }
+
+    void undo()
+    {
+        actionManager.undo();
     }
 
     ~FlowGrid()
@@ -227,4 +241,5 @@ private:
     std::vector<std::vector<Cell *>> cells = {};
     std::vector<ColorNodes> colorNodes = {};
     PathMaker pathMaker = PathMaker(&origin);
+    ActionManager actionManager = ActionManager();
 };

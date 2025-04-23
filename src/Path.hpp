@@ -98,7 +98,7 @@ struct Path
         if (!cells.empty())
         {
             prevCell = cells.back();
-            prevCell->setOutlineColor(sf::Color(128, 128, 128));
+            prevCell->setOutlineColor(Defaults::OUTLINE_COLOR);
         }
 
         cells.push_back(cell);
@@ -162,26 +162,40 @@ public:
     {
         if (cellPath.size() == 0)
             return false;
-        else if (cellPath.size() == 1)
-            return cellPath[0]->getColor() == Defaults::CELL_COLOR;
 
-        int rStep = cellPath[0]->row - cellPath[1]->row;
-        int cStep = cellPath[0]->col - cellPath[1]->col;
+        Cell *lastCell = path.cells.back();
+
+        // Current endpoint of path is the same as the last cell in the path
+        if (lastCell == cellPath.back())
+        {
+            return false;
+        }
+
+        int rStep = lastCell->row - cellPath[0]->row;
+        int cStep = lastCell->col - cellPath[0]->col;
+
         if (abs(rStep) > 0 && abs(cStep) > 0)
             return false;
 
-        for (int i = 1; i < cellPath.size(); ++i)
+        for (int i = 0; i < cellPath.size(); ++i)
         {
-            if ((rStep == 0 && cellPath[i]->row != cellPath[0]->row) || (cStep == 0 && cellPath[i]->col != cellPath[0]->col))
+            if ((rStep == 0 && cellPath[i]->row != lastCell->row) || (cStep == 0 && cellPath[i]->col != lastCell->col))
             {
                 return false;
             }
-            if (cellPath[i]->getColor() != Defaults::CELL_COLOR && (cellPath[i]->colorNode == false || cellPath[i]->getColor() != cellPath[0]->getColor()))
+            if (cellPath[i]->getColor() != Defaults::CELL_COLOR && (cellPath[i]->colorNode == false || cellPath[i]->getColor() != lastCell->getColor()))
             {
                 return false;
+            }
+
+            if (cellPath[i]->colorNode)
+            {
+                while (cellPath.back() != cellPath[i])
+                {
+                    cellPath.pop_back();
+                }
             }
         }
-
         return true;
     }
 
@@ -204,60 +218,36 @@ public:
         return false;
     }
 
-    void addCells(std::vector<Cell *> &cells)
+    bool addCells(std::vector<Cell *> &cells)
     {
         if (!isDrawing)
         {
-            return;
+            return false;
         }
 
         if (traceBackPath(cells.back()))
         {
-            return;
+            return false;
         }
 
         if (!validatePath(cells))
         {
-            return;
+            return false;
         }
 
         for (Cell *cell : cells)
         {
-            if (path.cells.size() > 0)
+            path.extendPath(cell);
+            if (cell->colorNode)
             {
-                Cell *lastCell = path.cells.back();
-
-                // Ensure the cell is adjacent to the last cell in the path
-                if (abs(lastCell->row - cell->row) + abs(lastCell->col - cell->col) == 1)
-                {
-                    if (cell->colorNode)
-                    {
-                        // If the cell is a color node, check if it matches the current color
-                        // Also check if it isn't the starting cell
-                        if (path.color != cell->getColor() || cell == path.cells[0])
-                        {
-                            return;
-                        }
-                        else
-                        {
-                            // Path is complete
-                            path.extendPath(cell);
-                            completePath();
-                            return;
-                        }
-                    }
-                    if (cell->getColor() == sf::Color::Black)
-                    {
-                        path.extendPath(cell);
-                        return;
-                    }
-                }
+                completePath();
             }
         }
-        return;
+        return true;
     }
 
-    bool isPathDrawing() const
+    bool
+    isPathDrawing() const
     {
         return isDrawing;
     }
@@ -273,6 +263,15 @@ public:
     {
         path.clearPath();
         isDrawing = false;
+    }
+
+    Path *getPath()
+    {
+        return &path;
+    }
+    Path *getPath(int id)
+    {
+        return &allPaths[id];
     }
 
     void drawPaths(sf::RenderWindow &window)
