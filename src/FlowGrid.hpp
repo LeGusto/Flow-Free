@@ -2,7 +2,7 @@
 
 #include "Grid.hpp"
 #include "Cells.hpp"
-#include "Path.hpp"
+#include "PathManager.hpp"
 #include "Defaults.hpp"
 #include "ActionManager.hpp"
 #include <iostream>
@@ -214,9 +214,19 @@ public:
         return cells[row][col];
     }
 
+    sf::Vector2f getOrigin()
+    {
+        return origin;
+    }
+
     void undo()
     {
         actionManager.undo();
+    }
+
+    void redo()
+    {
+        actionManager.redo();
     }
 
     ~FlowGrid()

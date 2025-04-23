@@ -1,4 +1,5 @@
 #include <SFML/Graphics.hpp>
+#include "Button.hpp"
 #include "FlowGrid.hpp"
 
 int main()
@@ -16,7 +17,8 @@ int main()
         {5, 0, 5, 1, sf::Color::Cyan}};
 
     FlowGrid grid = FlowGrid(10, 10, 50, colorNodes, window);
-    int cnt = 0;
+    Button undoButton = Button(-grid.getOrigin().x, -grid.getOrigin().y - 50, 100, 50, sf::Color::Red, "Undo");
+    Button redoButton = Button(-grid.getOrigin().x + 100, -grid.getOrigin().y - 50, 100, 50, sf::Color::Green, "Redo");
 
     while (window.isOpen())
     {
@@ -31,11 +33,23 @@ int main()
             {
                 if (mouseButtonPressed->button == sf::Mouse::Button::Left)
                 {
+                    // Checks if a cell is clicked
                     grid.makePath(mouseButtonPressed->position.x, mouseButtonPressed->position.y);
+                    if (undoButton.isClicked(mouseButtonPressed->position))
+                    {
+                        grid.undo();
+                    }
+                    else if (redoButton.isClicked(mouseButtonPressed->position))
+                    {
+                        grid.redo();
+                    }
                 }
                 else if (mouseButtonPressed->button == sf::Mouse::Button::Right)
                 {
-                    grid.destroyPath();
+                    if (grid.isDrawing())
+                    {
+                        grid.destroyPath();
+                    }
                 }
             }
 
@@ -46,20 +60,13 @@ int main()
                     grid.makePath(mouseMoved->position.x, mouseMoved->position.y);
                 }
             }
-
-            if (const auto *keyPressed = event->getIf<sf::Event::KeyPressed>())
-            {
-                if (keyPressed->scancode == sf::Keyboard::Scancode::Z)
-                {
-                    std::cout << "undoing\n";
-                    grid.undo();
-                }
-            }
         }
 
         window.clear();
 
         grid.draw(window);
+        undoButton.draw(window);
+        redoButton.draw(window);
 
         window.display();
     }

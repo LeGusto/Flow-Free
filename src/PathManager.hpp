@@ -12,7 +12,7 @@ struct Path
     sf::Vector2f *origin = nullptr;
 
     Path() = default;
-    Path(sf::Vector2f *origin) : origin(origin) {}
+    Path(sf::Vector2f *origin, sf::Color color) : origin(origin), color(color) {}
 
     void drawPath(sf::RenderWindow &window)
     {
@@ -123,6 +123,24 @@ struct Path
         cells.clear();
         line.clear();
     }
+
+    // Update cell path property for all cells in the path
+    void finalizePath()
+    {
+        for (auto &cell : cells)
+        {
+
+            cell->path = color.toInteger();
+            cell->setOutlineColor(Defaults::OUTLINE_COLOR);
+        }
+    }
+
+    void swapPath(Path &path)
+    {
+        this->cells = path.cells;
+        this->line = path.line;
+        finalizePath();
+    }
 };
 
 class PathMaker
@@ -133,29 +151,27 @@ public:
 
     void startPath(Cell *startCell, sf::Color color)
     {
-        // Check if the cell is already part of a path.cells and reset it
-        if (startCell->path != -1)
+
+        if (allPaths.find(startCell->getColor().toInteger()) == allPaths.end())
         {
-            allPaths[startCell->color.toInteger()].clearPath();
+            allPaths[startCell->getColor().toInteger()] = Path(origin, startCell->color);
         }
-        path.origin = origin;
-        path.color = color;
+        currPath = &(allPaths[startCell->getColor().toInteger()]);
+        currPath->clearPath();
+
+        currPath->origin = origin;
+        currPath->color = color;
         isDrawing = true;
-        path.color = color;
-        path.clearPath();
-        path.extendPath(startCell);
+        currPath->extendPath(startCell);
     }
 
+    // Called when a path is completed (reached an end source)
     void completePath()
     {
         isDrawing = false;
-        allPaths[path.color.toInteger()] = path;
-        for (auto &cell : path.cells)
-        {
-            cell->path = path.color.toInteger();
-        }
-        // Don't use clearPath, because it sets all path cells to black
-        path.resetPath();
+        currPath->finalizePath();
+        currPath = nullptr;
+        isDrawing = false;
     }
 
     bool validatePath(std::vector<Cell *> &cellPath)
@@ -163,7 +179,7 @@ public:
         if (cellPath.size() == 0)
             return false;
 
-        Cell *lastCell = path.cells.back();
+        Cell *lastCell = currPath->cells.back();
 
         // Current endpoint of path is the same as the last cell in the path
         if (lastCell == cellPath.back())
@@ -201,16 +217,16 @@ public:
 
     bool traceBackPath(Cell *cell)
     {
-        Cell *lastCell = path.cells.back();
+        Cell *lastCell = currPath->cells.back();
 
         // If the cell is already part of the path, shrink it down
         if (lastCell != cell)
         {
-            if (std::find(path.cells.begin(), path.cells.end(), cell) != path.cells.end())
+            if (std::find(currPath->cells.begin(), currPath->cells.end(), cell) != currPath->cells.end())
             {
-                while (path.cells.back() != cell)
+                while (currPath->cells.back() != cell)
                 {
-                    path.shrinkPath();
+                    currPath->shrinkPath();
                 }
                 return true;
             }
@@ -225,6 +241,7 @@ public:
             return false;
         }
 
+        // Shrink the path if the cell is already part of it
         if (traceBackPath(cells.back()))
         {
             return false;
@@ -237,7 +254,7 @@ public:
 
         for (Cell *cell : cells)
         {
-            path.extendPath(cell);
+            currPath->extendPath(cell);
             if (cell->colorNode)
             {
                 completePath();
@@ -254,20 +271,23 @@ public:
 
     Cell *getLastCell() const
     {
-        if (path.cells.empty())
+        if (currPath == nullptr)
             return nullptr;
-        return path.cells.back();
+
+        if (currPath->cells.empty())
+            return nullptr;
+        return currPath->cells.back();
     }
 
     void destroyPath()
     {
-        path.clearPath();
+        currPath->clearPath();
         isDrawing = false;
     }
 
     Path *getPath()
     {
-        return &path;
+        return currPath;
     }
     Path *getPath(int id)
     {
@@ -280,12 +300,17 @@ public:
         {
             p.drawPath(window);
         }
-        path.drawPath(window);
+    }
+
+    ~PathMaker()
+    {
+        currPath = nullptr;
+        origin = nullptr;
     }
 
 private:
     bool isDrawing = false;
     sf::Vector2f *origin = nullptr;
-    Path path = Path();
+    Path *currPath = nullptr;
     std::map<int, Path> allPaths = {};
 };
