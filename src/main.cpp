@@ -35,6 +35,7 @@ int main()
                 {
                     // Checks if a cell is clicked
                     grid.makePath(mouseButtonPressed->position.x, mouseButtonPressed->position.y);
+
                     if (undoButton.isClicked(mouseButtonPressed->position))
                     {
                         grid.undo();

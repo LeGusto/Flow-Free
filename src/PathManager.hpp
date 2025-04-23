@@ -131,6 +131,7 @@ struct Path
         {
 
             cell->path = color.toInteger();
+            cell->setColor(color);
             cell->setOutlineColor(Defaults::OUTLINE_COLOR);
         }
     }
