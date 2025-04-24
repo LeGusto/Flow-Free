@@ -76,7 +76,6 @@ public:
                 std::cerr << "Error: ColorNodes position out of bounds." << std::endl;
                 continue;
             }
-            std::cout << node.row << " " << node.col << std::endl;
 
             node.circle = sf::CircleShape();
             node.circle.setFillColor(node.color);
@@ -89,9 +88,16 @@ public:
         {
             for (u_short col = 0; col < cols; ++col)
             {
-                if (cells[row][col] == nullptr && cellExists[row][col])
+                if (cells[row][col] == nullptr)
                 {
-                    cells[row][col] = new Cell(row, col, getCellPos(row, col), cellSize, gridLineThickness);
+                    if (cellExists[row][col])
+                    {
+                        cells[row][col] = new Cell(row, col, getCellPos(row, col), cellSize, gridLineThickness);
+                    }
+                    else
+                    {
+                        cells[row][col] = new BlockingCell(row, col, getCellPos(row, col), cellSize, gridLineThickness);
+                    }
                 }
                 cells[row][col]->setOrigin(origin);
             }

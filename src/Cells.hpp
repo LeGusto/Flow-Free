@@ -93,7 +93,21 @@ struct SourceCell : public Cell
     }
 };
 
-// Store suorce cells
+struct BlockingCell : public Cell
+{
+    BlockingCell(u_short row, u_short col, sf::Vector2f position,
+                 u_short cellSize, u_short gridLineThickness)
+        : Cell(row, col, position, cellSize, gridLineThickness)
+    {
+        this->colorNode = true;
+        this->color = Defaults::OUTLINE_COLOR;
+        this->shape.setFillColor(Defaults::OUTLINE_COLOR);
+    }
+
+    void setColor(sf::Color color) override { return; }
+};
+
+// Store source noces
 struct ColorNodes
 {
 public:

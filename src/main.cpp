@@ -17,7 +17,7 @@ int main()
 
     window.setVerticalSyncEnabled(true);
 
-    FlowGrid grid = readLevel(1, window);
+    FlowGrid grid = readLevel(2, window);
     MainMenu mainMenu = MainMenu(window);
 
     std::string response = "";
