@@ -3,10 +3,12 @@
 #include "FlowGrid.hpp"
 #include "MainMenu.hpp"
 #include "LevelReader.hpp"
+#include "LevelSelection.hpp"
 
 enum class GameState
 {
     MAIN_MENU,
+    SELECT_LEVEL,
     PLAYING
 };
 
@@ -19,6 +21,7 @@ int main()
 
     FlowGrid grid = readLevel(2, window);
     MainMenu mainMenu = MainMenu(window);
+    LevelSelection levelSelection = LevelSelection(window);
 
     std::string response = "";
 
@@ -26,6 +29,7 @@ int main()
     {
         while (const std::optional event = window.pollEvent())
         {
+            response = "";
             if (event->is<sf::Event::Closed>())
             {
                 window.close();
@@ -40,6 +44,15 @@ int main()
                 }
                 else if (response == "Start")
                 {
+                    gameState = GameState::SELECT_LEVEL;
+                }
+            }
+            else if (gameState == GameState::SELECT_LEVEL)
+            {
+                levelSelection.handleClick(event, response);
+                if (response != "")
+                {
+                    grid = std::move(readLevel(std::stoi(response), window));
                     gameState = GameState::PLAYING;
                 }
             }
@@ -58,6 +71,10 @@ int main()
         {
             mainMenu.draw(window);
             // mainMenu.handleInput(sf::Mouse::getPosition(window));
+        }
+        else if (gameState == GameState::SELECT_LEVEL)
+        {
+            levelSelection.draw(window);
         }
         else if (gameState == GameState::PLAYING)
         {

@@ -7,8 +7,6 @@
 class Grid
 {
 public:
-    virtual ~Grid() = default;
-
     virtual void setCellSize(u_short cellSize) = 0;
 
     virtual u_short getCellSize() const = 0;

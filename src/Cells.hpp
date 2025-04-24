@@ -113,9 +113,9 @@ struct ColorNodes
 public:
     ColorNodes(u_short row, u_short col, sf::Color color)
         : row(row), col(col), color(color) {}
-    const u_short row = 0;
-    const u_short col = 0;
+    u_short row = 0;
+    u_short col = 0;
     sf::CircleShape circle;
 
-    const sf::Color color = Defaults::COLORNODE_COLOR;
+    sf::Color color = Defaults::COLORNODE_COLOR;
 };

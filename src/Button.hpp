@@ -1,5 +1,5 @@
 #pragma once
-// #include <iostream>
+#include <iostream>
 #include <SFML/Graphics.hpp>
 #include <functional>
 
@@ -9,14 +9,22 @@ public:
     Button()
     {
         font = sf::Font("src/ARIAL.TTF");
+        if (!font.openFromFile("src/ARIAL.TTF"))
+        {
+            std::cerr << "Error loading font" << std::endl;
+        }
     };
+
+    Button(const Button &other)
+    {
+        font = other.font;
+        text = other.text;
+        shape = other.shape;
+    }
 
     void setText(const std::string &label)
     {
         text.setString(label);
-        text.setPosition(sf::Vector2f(
-            shape.getPosition().x + (shape.getSize().x - text.getLocalBounds().size.x) / 2,
-            shape.getPosition().y + (shape.getSize().y - text.getLocalBounds().size.y) / 2 - text.getCharacterSize() / 3));
         text.setPosition(sf::Vector2f(
             shape.getPosition().x + (shape.getSize().x - text.getLocalBounds().size.x) / 2,
             shape.getPosition().y + (shape.getSize().y - text.getLocalBounds().size.y) / 2 - text.getCharacterSize() / 3));
@@ -48,6 +56,10 @@ public:
     {
         text.setFillColor(color);
     }
+    void setTextSize(u_short size)
+    {
+        text.setCharacterSize(size);
+    }
 
     sf::Vector2f getSize()
     {
@@ -57,6 +69,7 @@ public:
     void draw(sf::RenderWindow &window)
     {
         window.draw(shape);
+        text.setFont(font);
         window.draw(text);
     }
 

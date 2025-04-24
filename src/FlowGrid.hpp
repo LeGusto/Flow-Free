@@ -23,6 +23,46 @@ public:
         initializeButtons();
     }
 
+    // FlowGrid &operator=(const FlowGrid &other) = delete;
+    FlowGrid &operator=(FlowGrid &&other) noexcept
+    {
+        if (this != &other)
+        {
+            cellSize = other.cellSize;
+            gridLineThickness = other.gridLineThickness;
+            rows = other.rows;
+            cols = other.cols;
+
+            origin = std::move(other.origin);
+
+            pathTemp = std::move(other.pathTemp);
+            cells = std::move(other.cells);
+            colorNodes = std::move(other.colorNodes);
+
+            pathMaker = std::move(other.pathMaker);
+            actionManager = std::move(other.actionManager);
+            undoButton = std::move(other.undoButton);
+            redoButton = std::move(other.redoButton);
+
+            // Prevent destructor from accesing unstable entries
+            other.rows = 0;
+            other.cols = 0;
+        }
+        return *this;
+    }
+
+    ~FlowGrid()
+    {
+        for (u_short row = 0; row < rows; ++row)
+        {
+            for (u_short col = 0; col < cols; ++col)
+            {
+                delete cells[row][col];
+            }
+        }
+        cells.clear();
+    }
+
     u_short getCellSize() const override { return cellSize; }
     u_short getGridLineThickness() const override { return gridLineThickness; }
     u_short getRows() const override { return rows; }
@@ -291,17 +331,6 @@ public:
             }
         }
         return false;
-    }
-
-    ~FlowGrid()
-    {
-        for (u_short row = 0; row < rows; ++row)
-        {
-            for (u_short col = 0; col < cols; ++col)
-            {
-                delete cells[row][col];
-            }
-        }
     }
 
 private:

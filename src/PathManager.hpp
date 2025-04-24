@@ -165,6 +165,11 @@ public:
         isDrawing = true;
         currPath->extendPath(startCell);
     }
+    ~PathMaker()
+    {
+        currPath = nullptr;
+        origin = nullptr;
+    }
 
     // Called when a path is completed (reached an end source)
     void completePath()
@@ -304,12 +309,6 @@ public:
         {
             p.drawPath(window);
         }
-    }
-
-    ~PathMaker()
-    {
-        currPath = nullptr;
-        origin = nullptr;
     }
 
 private:
