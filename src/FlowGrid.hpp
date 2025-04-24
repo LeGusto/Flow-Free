@@ -10,7 +10,8 @@
 class FlowGrid : public Grid
 {
 public:
-    FlowGrid(u_short rows, u_short cols, u_short cellSize, std::vector<ColorNodes> colorNodes, sf::RenderWindow &window)
+    FlowGrid() = delete;
+    FlowGrid(u_short rows, u_short cols, u_short cellSize, std::vector<ColorNodes> colorNodes, std::vector<std::vector<bool>> cellExists, sf::RenderWindow &window)
         : rows(rows), cols(cols), cellSize(cellSize), colorNodes(std::move(colorNodes))
     {
         origin = sf::Vector2f(
@@ -18,7 +19,7 @@ public:
             -(float)(window.getSize().y - (rows * cellSize + (rows + 1) * gridLineThickness)) / 2);
 
         cells.resize(rows, std::vector<Cell *>(cols, nullptr));
-        initializeShapes();
+        initializeShapes(cellExists);
         initializeButtons();
     }
 
@@ -41,6 +42,8 @@ public:
         {
             for (u_short col = 0; col < cols; ++col)
             {
+                if (cells[row][col] == nullptr)
+                    continue;
                 if (cells[row][col] == pathMakerHead)
                     continue;
                 cells[row][col]->draw_cell(window);
@@ -62,41 +65,31 @@ public:
             row * cellSize + (row + 1) * gridLineThickness);
     }
 
-    void initializeShapes()
+    void initializeShapes(std::vector<std::vector<bool>> &cellExists)
     {
 
         for (auto &node : colorNodes)
         {
-            if (node.row1 == node.row2 && node.col1 == node.col2)
-            {
-                std::cerr << "Error: ColorNodes cannot have the same position for both circles." << std::endl;
-                continue;
-            }
-            if (node.row1 >= rows || node.col1 >= cols || node.row2 >= rows || node.col2 >= cols)
+
+            if (node.row >= rows || node.col >= cols)
             {
                 std::cerr << "Error: ColorNodes position out of bounds." << std::endl;
                 continue;
             }
+            std::cout << node.row << " " << node.col << std::endl;
 
-            node.circle1 = sf::CircleShape();
-            node.circle1.setFillColor(node.color);
-            node.circle1.setPosition(getCellPos(node.row1, node.col1));
-            node.circle1.setRadius(cellSize / 2);
-
-            node.circle2 = sf::CircleShape();
-            node.circle2.setFillColor(node.color);
-            node.circle2.setPosition(getCellPos(node.row2, node.col2));
-            node.circle2.setRadius(cellSize / 2);
-
-            cells[node.row1][node.col1] = new SourceCell(node.row1, node.col1, getCellPos(node.row1, node.col1), cellSize, gridLineThickness, node.circle1);
-            cells[node.row2][node.col2] = new SourceCell(node.row2, node.col2, getCellPos(node.row2, node.col2), cellSize, gridLineThickness, node.circle2);
+            node.circle = sf::CircleShape();
+            node.circle.setFillColor(node.color);
+            node.circle.setPosition(getCellPos(node.row, node.col));
+            node.circle.setRadius(cellSize / 2);
+            cells[node.row][node.col] = new SourceCell(node.row, node.col, getCellPos(node.row, node.col), cellSize, gridLineThickness, node.circle);
         }
 
         for (u_short row = 0; row < rows; ++row)
         {
             for (u_short col = 0; col < cols; ++col)
             {
-                if (cells[row][col] == nullptr)
+                if (cells[row][col] == nullptr && cellExists[row][col])
                 {
                     cells[row][col] = new Cell(row, col, getCellPos(row, col), cellSize, gridLineThickness);
                 }
@@ -138,11 +131,8 @@ public:
 
         for (auto &node : colorNodes)
         {
-            node.circle1.setRadius(cellSize / 2);
-            node.circle1.setPosition(getCellPos(node.row1, node.col1));
-
-            node.circle2.setRadius(cellSize / 2);
-            node.circle2.setPosition(getCellPos(node.row2, node.col2));
+            node.circle.setRadius(cellSize / 2);
+            node.circle.setPosition(getCellPos(node.row, node.col));
         }
     };
 

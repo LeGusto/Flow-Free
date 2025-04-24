@@ -2,6 +2,7 @@
 #include "Button.hpp"
 #include "FlowGrid.hpp"
 #include "MainMenu.hpp"
+#include "LevelReader.hpp"
 
 enum class GameState
 {
@@ -16,15 +17,7 @@ int main()
 
     window.setVerticalSyncEnabled(true);
 
-    std::vector<ColorNodes> colorNodes = {
-        {10, 0, 0, 1, sf::Color::Red},
-        {1, 5, 1, 1, sf::Color::Blue},
-        {2, 7, 2, 5, sf::Color::Green},
-        {0, 4, 3, 1, sf::Color::Yellow},
-        {9, 9, 4, 1, sf::Color::Magenta},
-        {5, 0, 5, 1, sf::Color::Cyan}};
-
-    FlowGrid grid = FlowGrid(10, 10, 50, colorNodes, window);
+    FlowGrid grid = readLevel(1, window);
     MainMenu mainMenu = MainMenu(window);
 
     std::string response = "";

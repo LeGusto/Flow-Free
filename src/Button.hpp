@@ -10,29 +10,16 @@ public:
     {
         font = sf::Font("src/ARIAL.TTF");
     };
-    Button(float x, float y, float width, float height, sf::Color color, const std::string &label)
-    {
-        font = sf::Font("src/ARIAL.TTF");
 
-        shape.setPosition(sf::Vector2f(x, y));
-        shape.setSize(sf::Vector2f(width, height));
-        shape.setFillColor(color);
-        shape.setOutlineThickness(2);
-        shape.setOutlineColor(sf::Color::Black);
-
-        text.setString(label);
-        text.setCharacterSize(20);
-        text.setFillColor(sf::Color::Black);
-        text.setPosition(sf::Vector2f(
-            x + (width - text.getLocalBounds().size.x) / 2,
-            y + (height - text.getLocalBounds().size.y) / 2 - 5));
-    }
     void setText(const std::string &label)
     {
         text.setString(label);
         text.setPosition(sf::Vector2f(
             shape.getPosition().x + (shape.getSize().x - text.getLocalBounds().size.x) / 2,
-            shape.getPosition().y + (shape.getSize().y - text.getLocalBounds().size.y) / 2 - 5));
+            shape.getPosition().y + (shape.getSize().y - text.getLocalBounds().size.y) / 2 - text.getCharacterSize() / 3));
+        text.setPosition(sf::Vector2f(
+            shape.getPosition().x + (shape.getSize().x - text.getLocalBounds().size.x) / 2,
+            shape.getPosition().y + (shape.getSize().y - text.getLocalBounds().size.y) / 2 - text.getCharacterSize() / 3));
     }
     void setSize(sf::Vector2f size)
     {
