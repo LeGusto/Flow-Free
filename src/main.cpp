@@ -1,9 +1,17 @@
 #include <SFML/Graphics.hpp>
 #include "Button.hpp"
 #include "FlowGrid.hpp"
+#include "MainMenu.hpp"
+
+enum class GameState
+{
+    MAIN_MENU,
+    PLAYING
+};
 
 int main()
 {
+    GameState gameState = GameState::MAIN_MENU;
     auto window = sf::RenderWindow(sf::VideoMode({1000u, 800u}), "Flow Free", sf::Style::Close);
 
     window.setVerticalSyncEnabled(true);
@@ -17,8 +25,9 @@ int main()
         {5, 0, 5, 1, sf::Color::Cyan}};
 
     FlowGrid grid = FlowGrid(10, 10, 50, colorNodes, window);
-    Button undoButton = Button(-grid.getOrigin().x, -grid.getOrigin().y - 50, 100, 50, sf::Color::Red, "Undo");
-    Button redoButton = Button(-grid.getOrigin().x + 100, -grid.getOrigin().y - 50, 100, 50, sf::Color::Green, "Redo");
+    MainMenu mainMenu = MainMenu(window);
+
+    std::string response = "";
 
     while (window.isOpen())
     {
@@ -29,45 +38,38 @@ int main()
                 window.close();
             }
 
-            if (const auto *mouseButtonPressed = event->getIf<sf::Event::MouseButtonPressed>())
+            if (gameState == GameState::MAIN_MENU)
             {
-                if (mouseButtonPressed->button == sf::Mouse::Button::Left)
+                mainMenu.handleClick(event, response);
+                if (response == "Close")
                 {
-                    // Checks if a cell is clicked
-                    grid.makePath(mouseButtonPressed->position.x, mouseButtonPressed->position.y);
-
-                    if (undoButton.isClicked(mouseButtonPressed->position))
-                    {
-                        grid.undo();
-                    }
-                    else if (redoButton.isClicked(mouseButtonPressed->position))
-                    {
-                        grid.redo();
-                    }
+                    window.close();
                 }
-                else if (mouseButtonPressed->button == sf::Mouse::Button::Right)
+                else if (response == "Start")
                 {
-                    if (grid.isDrawing())
-                    {
-                        grid.destroyPath();
-                    }
+                    gameState = GameState::PLAYING;
                 }
             }
-
-            if (const auto *mouseMoved = event->getIf<sf::Event::MouseMoved>())
+            else if (gameState == GameState::PLAYING)
             {
-                if (grid.isDrawing())
-                {
-                    grid.makePath(mouseMoved->position.x, mouseMoved->position.y);
-                }
+                grid.processEvent(event, window);
             }
         }
 
         window.clear();
 
-        grid.draw(window);
-        undoButton.draw(window);
-        redoButton.draw(window);
+        // grid.draw(window);
+        // undoButton.draw(window);
+        // redoButton.draw(window);
+        if (gameState == GameState::MAIN_MENU)
+        {
+            mainMenu.draw(window);
+            // mainMenu.handleInput(sf::Mouse::getPosition(window));
+        }
+        else if (gameState == GameState::PLAYING)
+        {
+            grid.draw(window);
+        }
 
         window.display();
     }

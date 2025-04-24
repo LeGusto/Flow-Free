@@ -204,6 +204,10 @@ public:
             {
                 return false;
             }
+            if (cellPath[i]->color == lastCell->color && cellPath[i]->colorNode)
+            {
+                return false;
+            }
 
             if (cellPath[i]->colorNode)
             {
@@ -264,8 +268,7 @@ public:
         return true;
     }
 
-    bool
-    isPathDrawing() const
+    bool isPathDrawing() const
     {
         return isDrawing;
     }
@@ -286,7 +289,7 @@ public:
         isDrawing = false;
     }
 
-    Path *getPath()
+    Path *getPath() const
     {
         return currPath;
     }

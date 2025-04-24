@@ -15,7 +15,7 @@ public:
     virtual u_short getGridLineThickness() const = 0;
     virtual u_short getRows() const = 0;
     virtual u_short getCols() const = 0;
-    virtual u_int getGridSize() const = 0;
+    virtual sf::Vector2f getGridSize() const = 0;
 
 private:
     u_short rows = 0;

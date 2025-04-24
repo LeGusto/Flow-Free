@@ -19,13 +19,19 @@ public:
 
         cells.resize(rows, std::vector<Cell *>(cols, nullptr));
         initializeShapes();
+        initializeButtons();
     }
 
     u_short getCellSize() const override { return cellSize; }
     u_short getGridLineThickness() const override { return gridLineThickness; }
     u_short getRows() const override { return rows; }
     u_short getCols() const override { return cols; }
-    u_int getGridSize() const override { return (rows + 1) * gridLineThickness + (cols + 1) * gridLineThickness + cellSize * rows * cols; }
+    sf::Vector2f getGridSize() const override
+    {
+        return sf::Vector2f(
+            cols * cellSize + (cols + 1) * gridLineThickness,
+            rows * cellSize + (rows + 1) * gridLineThickness);
+    }
     bool isDrawing() { return pathMaker.isPathDrawing(); }
 
     void draw(sf::RenderWindow &window)
@@ -45,6 +51,8 @@ public:
             pathMakerHead->draw_cell(window);
         }
         pathMaker.drawPaths(window);
+        undoButton.draw(window);
+        redoButton.draw(window);
     }
 
     sf::Vector2f getCellPos(u_short row, u_short col)
@@ -95,6 +103,25 @@ public:
                 cells[row][col]->setOrigin(origin);
             }
         }
+    }
+
+    void initializeButtons()
+    {
+        int PADDING = 10;
+
+        undoButton.setSize(sf::Vector2f(100, 50));
+        undoButton.setPosition(sf::Vector2f(-origin.x + getGridSize().x / 2 + PADDING, -origin.y - 60));
+        undoButton.setColor(sf::Color::Black);
+        undoButton.setOutlineColor(sf::Color::White);
+        undoButton.setText("Undo");
+        undoButton.setOutlineThickness(2);
+
+        redoButton.setSize(sf::Vector2f(100, 50));
+        redoButton.setPosition(sf::Vector2f(-origin.x + getGridSize().x / 2 - redoButton.getSize().x - PADDING, -origin.y - 60));
+        redoButton.setColor(sf::Color::Black);
+        redoButton.setText("Redo");
+        redoButton.setOutlineColor(sf::Color::White);
+        redoButton.setOutlineThickness(2);
     }
 
     void setCellSize(u_short cellSize) override
@@ -163,7 +190,7 @@ public:
 
             if (pathMaker.addCells(pathTemp) && pathMaker.isPathDrawing() == false)
             {
-                actionManager.undoAddAction(Action(Action::ADD, pathMaker.getPath(cell->getColor().toInteger())));
+                actionManager.undoAddAction(Action(Action::ADD, pathMaker.getPath(prevCell->getColor().toInteger())));
             }
         }
         else if (cell->colorNode)
@@ -229,6 +256,47 @@ public:
         actionManager.redo();
     }
 
+    bool processEvent(const std::optional<sf::Event> &event, sf::RenderWindow &window)
+    {
+        if (const auto *mouseButtonPressed = event->getIf<sf::Event::MouseButtonPressed>())
+        {
+            if (mouseButtonPressed->button == sf::Mouse::Button::Left)
+            {
+                // Checks if a cell is clicked
+                if (undoButton.isClicked(mouseButtonPressed->position))
+                {
+                    undo();
+                }
+                else if (redoButton.isClicked(mouseButtonPressed->position))
+                {
+                    redo();
+                }
+                else
+                {
+                    makePath(mouseButtonPressed->position.x, mouseButtonPressed->position.y);
+                }
+                return true;
+            }
+            else if (mouseButtonPressed->button == sf::Mouse::Button::Right)
+            {
+                if (isDrawing())
+                {
+                    destroyPath();
+                }
+                return true;
+            }
+        }
+
+        if (const auto *mouseMoved = event->getIf<sf::Event::MouseMoved>())
+        {
+            if (isDrawing())
+            {
+                makePath(mouseMoved->position.x, mouseMoved->position.y);
+            }
+        }
+        return false;
+    }
+
     ~FlowGrid()
     {
         for (u_short row = 0; row < rows; ++row)
@@ -252,4 +320,6 @@ private:
     std::vector<ColorNodes> colorNodes = {};
     PathMaker pathMaker = PathMaker(&origin);
     ActionManager actionManager = ActionManager();
+    Button undoButton = Button();
+    Button redoButton = Button();
 };

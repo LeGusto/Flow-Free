@@ -14,4 +14,6 @@ namespace Defaults
     const sf::Color CELL_COLOR = sf::Color::Black;
     const sf::Color OUTLINE_COLOR = sf::Color(128, 128, 128);
     const sf::Color COLORNODE_COLOR = sf::Color::Black;
+
+    const sf::Vector2f MENU_BUTTON_SIZE = sf::Vector2f(200, 50);
 }
