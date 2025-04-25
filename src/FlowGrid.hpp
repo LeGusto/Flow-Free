@@ -43,6 +43,7 @@ public:
             actionManager = std::move(other.actionManager);
             undoButton = std::move(other.undoButton);
             redoButton = std::move(other.redoButton);
+            returnButton = std::move(other.returnButton);
 
             // Prevent destructor from accesing unstable entries
             other.rows = 0;
@@ -96,6 +97,7 @@ public:
         pathMaker.drawPaths(window);
         undoButton.draw(window);
         redoButton.draw(window);
+        returnButton.draw(window);
     }
 
     sf::Vector2f getCellPos(u_short row, u_short col)
@@ -146,21 +148,30 @@ public:
 
     void initializeButtons()
     {
-        int PADDING = 10;
+        float PADDING = 20;
+        float START_X = -origin.x + getGridSize().x / 2 - (3 * (100 + PADDING)) / (float)2;
 
         undoButton.setSize(sf::Vector2f(100, 50));
-        undoButton.setPosition(sf::Vector2f(-origin.x + getGridSize().x / 2 + PADDING, -origin.y - 60));
+        undoButton.setPosition(sf::Vector2f(START_X, -origin.y - 60));
         undoButton.setColor(sf::Color::Black);
         undoButton.setOutlineColor(sf::Color::White);
         undoButton.setText("Undo");
         undoButton.setOutlineThickness(2);
 
         redoButton.setSize(sf::Vector2f(100, 50));
-        redoButton.setPosition(sf::Vector2f(-origin.x + getGridSize().x / 2 - redoButton.getSize().x - PADDING, -origin.y - 60));
+        redoButton.setPosition(sf::Vector2f(START_X + redoButton.getSize().x + PADDING, -origin.y - 60));
         redoButton.setColor(sf::Color::Black);
         redoButton.setText("Redo");
         redoButton.setOutlineColor(sf::Color::White);
         redoButton.setOutlineThickness(2);
+
+        returnButton.setSize(sf::Vector2f(100, 50));
+        returnButton.setPosition(sf::Vector2f(START_X + 2 * (returnButton.getSize().x + PADDING), -origin.y - 60));
+        returnButton.setColor(sf::Color::Black);
+        returnButton.setText("Return");
+        returnButton.setTextColor(sf::Color::Red);
+        returnButton.setOutlineColor(sf::Color::Red);
+        returnButton.setOutlineThickness(2);
     }
 
     void setCellSize(u_short cellSize) override
@@ -292,7 +303,7 @@ public:
         actionManager.redo();
     }
 
-    bool processEvent(const std::optional<sf::Event> &event, sf::RenderWindow &window)
+    bool processEvent(const std::optional<sf::Event> &event, sf::RenderWindow &window, std::string &response)
     {
         if (const auto *mouseButtonPressed = event->getIf<sf::Event::MouseButtonPressed>())
         {
@@ -301,11 +312,17 @@ public:
                 // Checks if a cell is clicked
                 if (undoButton.isClicked(mouseButtonPressed->position))
                 {
+                    response = "Undo";
                     undo();
                 }
                 else if (redoButton.isClicked(mouseButtonPressed->position))
                 {
+                    response = "Redo";
                     redo();
+                }
+                else if (returnButton.isClicked(mouseButtonPressed->position))
+                {
+                    response = "Return";
                 }
                 else
                 {
@@ -347,4 +364,5 @@ private:
     ActionManager actionManager = ActionManager();
     Button undoButton = Button();
     Button redoButton = Button();
+    Button returnButton = Button();
 };

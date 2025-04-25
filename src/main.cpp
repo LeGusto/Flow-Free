@@ -58,7 +58,11 @@ int main()
             }
             else if (gameState == GameState::PLAYING)
             {
-                grid.processEvent(event, window);
+                grid.processEvent(event, window, response);
+                if (response == "Return")
+                {
+                    gameState = GameState::SELECT_LEVEL;
+                }
             }
         }
 
