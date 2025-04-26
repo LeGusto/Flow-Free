@@ -17,7 +17,7 @@ public:
         origin = sf::Vector2f(
             -(float)(window.getSize().x - (cols * cellSize + (cols + 1) * gridLineThickness)) / 2,
             -(float)(window.getSize().y - (rows * cellSize + (rows + 1) * gridLineThickness)) / 2);
-
+        remainingSources = this->colorNodes.size() / 2;
         cells.resize(rows, std::vector<Cell *>(cols, nullptr));
         initializeShapes(cellExists);
         initializeButtons();
@@ -32,6 +32,7 @@ public:
             gridLineThickness = other.gridLineThickness;
             rows = other.rows;
             cols = other.cols;
+            remainingSources = other.remainingSources;
 
             origin = std::move(other.origin);
 
@@ -44,6 +45,8 @@ public:
             undoButton = std::move(other.undoButton);
             redoButton = std::move(other.redoButton);
             returnButton = std::move(other.returnButton);
+
+            pathMaker.updateRemainingSources(&remainingSources);
 
             // Prevent destructor from accesing unstable entries
             other.rows = 0;
@@ -230,12 +233,7 @@ public:
 
             tracePath(cell, prevCell);
 
-            if (pathTemp.empty())
-            {
-                pathTemp.push_back(cell);
-            }
-
-            if (pathMaker.addCells(pathTemp) && pathMaker.isPathDrawing() == false)
+            if (pathMaker.addCells(pathTemp) && !pathMaker.isPathDrawing())
             {
                 actionManager.undoAddAction(Action(Action::ADD, pathMaker.getPath(prevCell->getColor().toInteger())));
             }
@@ -303,13 +301,17 @@ public:
         actionManager.redo();
     }
 
+    bool isCompleted()
+    {
+        return remainingSources == 0;
+    }
+
     bool processEvent(const std::optional<sf::Event> &event, sf::RenderWindow &window, std::string &response)
     {
         if (const auto *mouseButtonPressed = event->getIf<sf::Event::MouseButtonPressed>())
         {
             if (mouseButtonPressed->button == sf::Mouse::Button::Left)
             {
-                // Checks if a cell is clicked
                 if (undoButton.isClicked(mouseButtonPressed->position))
                 {
                     response = "Undo";
@@ -355,12 +357,13 @@ private:
     u_short gridLineThickness = Defaults::GRID_LINE_THICKNESS;
     u_short rows = 0;
     u_short cols = 0;
+    u_short remainingSources = 0;
     sf::Vector2f origin = {-50, -50};
     std::vector<Cell *> pathTemp = {};
 
     std::vector<std::vector<Cell *>> cells = {};
     std::vector<ColorNodes> colorNodes = {};
-    PathMaker pathMaker = PathMaker(&origin);
+    PathMaker pathMaker = PathMaker(&origin, &remainingSources);
     ActionManager actionManager = ActionManager();
     Button undoButton = Button();
     Button redoButton = Button();

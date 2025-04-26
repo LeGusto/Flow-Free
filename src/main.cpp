@@ -24,6 +24,7 @@ int main()
     LevelSelection levelSelection = LevelSelection(window);
 
     std::string response = "";
+    u_short currLevel = -1;
 
     while (window.isOpen())
     {
@@ -52,7 +53,8 @@ int main()
                 levelSelection.handleClick(event, response);
                 if (response != "")
                 {
-                    grid = std::move(readLevel(std::stoi(response), window));
+                    currLevel = std::stoi(response);
+                    grid = std::move(readLevel(currLevel, window));
                     gameState = GameState::PLAYING;
                 }
             }
@@ -61,6 +63,11 @@ int main()
                 grid.processEvent(event, window, response);
                 if (response == "Return")
                 {
+                    gameState = GameState::SELECT_LEVEL;
+                }
+                else if (grid.isCompleted())
+                {
+                    levelSelection.setLevelCompleted(currLevel);
                     gameState = GameState::SELECT_LEVEL;
                 }
             }

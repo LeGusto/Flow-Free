@@ -9,10 +9,13 @@ struct Path
     std::vector<Cell *> cells = {};
     std::vector<sf::Vertex> line = {};
     sf::Color color;
+    bool completed = false;
     sf::Vector2f *origin = nullptr;
+    u_short *remainingSources = nullptr;
 
     Path() = default;
-    Path(sf::Vector2f *origin, sf::Color color) : origin(origin), color(color) {}
+    Path(sf::Vector2f *origin, sf::Color color, u_short *remainingSources) : origin(origin), color(color), remainingSources(remainingSources) {};
+    ~Path() = default;
 
     void drawPath(sf::RenderWindow &window)
     {
@@ -116,12 +119,19 @@ struct Path
         {
             shrinkPath();
         }
+        if (remainingSources != nullptr && completed)
+        {
+            ++(*remainingSources);
+            completed = false;
+        }
+        completed = false;
     }
     void resetPath()
     {
         cells.back()->setOutlineColor(Defaults::OUTLINE_COLOR);
         cells.clear();
         line.clear();
+        completed = false;
     }
 
     // Update cell path property for all cells in the path
@@ -133,6 +143,11 @@ struct Path
             cell->path = color.toInteger();
             cell->setColor(color);
             cell->setOutlineColor(Defaults::OUTLINE_COLOR);
+        }
+        if (remainingSources != nullptr && !completed)
+        {
+            --(*remainingSources);
+            completed = true;
         }
     }
 
@@ -148,14 +163,14 @@ class PathMaker
 {
 public:
     PathMaker() = delete; // Must supply origin
-    PathMaker(sf::Vector2f *origin) : origin(origin) {}
+    PathMaker(sf::Vector2f *origin, u_short *remainingSources) : origin(origin), remainingSources(remainingSources) {}
 
     void startPath(Cell *startCell, sf::Color color)
     {
 
         if (allPaths.find(startCell->getColor().toInteger()) == allPaths.end())
         {
-            allPaths[startCell->getColor().toInteger()] = Path(origin, startCell->color);
+            allPaths[startCell->getColor().toInteger()] = Path(origin, startCell->color, remainingSources);
         }
         currPath = &(allPaths[startCell->getColor().toInteger()]);
         currPath->clearPath();
@@ -294,7 +309,7 @@ public:
         isDrawing = false;
     }
 
-    Path *getPath() const
+    Path *getPath()
     {
         return currPath;
     }
@@ -311,9 +326,20 @@ public:
         }
     }
 
+    // Update pointer when the flowgrid is moved
+    void updateRemainingSources(u_short *remainingSources)
+    {
+        this->remainingSources = remainingSources;
+        for (auto &[key, p] : allPaths)
+        {
+            p.remainingSources = remainingSources;
+        }
+    }
+
 private:
     bool isDrawing = false;
     sf::Vector2f *origin = nullptr;
     Path *currPath = nullptr;
+    u_short *remainingSources = nullptr;
     std::map<int, Path> allPaths = {};
 };

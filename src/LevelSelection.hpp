@@ -2,6 +2,34 @@
 #include "Button.hpp"
 #include <algorithm>
 
+class Level
+{
+public:
+    Level() = default;
+    Level(Level &&other) noexcept
+        : button(std::move(other.button)), completed(other.completed) {};
+    ~Level() = default;
+
+    void setCompleted(bool done)
+    {
+        completed = done;
+        button.setOutlineColor(done ? sf::Color::Green : sf::Color::White);
+        button.setTextColor(done ? sf::Color::Green : sf::Color::White);
+    }
+    void draw(sf::RenderWindow &window)
+    {
+        button.draw(window);
+    }
+    Button &getButton()
+    {
+        return button;
+    }
+
+public:
+    Button button;
+    bool completed = false;
+};
+
 class LevelSelection
 {
 public:
@@ -34,7 +62,8 @@ public:
                 xOffset = menuX + buttonSpacing;
                 yOffset += buttonHeight + buttonSpacing;
             }
-            Button button = Button();
+            Level lvl = Level();
+            Button &button = lvl.getButton();
 
             button.setTextSize(20);
             button.setSize(sf::Vector2f(buttonWidth, buttonHeight));
@@ -46,7 +75,7 @@ public:
             button.setOutlineThickness(2);
             button.setTextColor(sf::Color::White);
 
-            levelButtons.push_back(button);
+            levelButtons.push_back(std::move(lvl));
 
             xOffset += buttonWidth + buttonSpacing;
         }
@@ -80,13 +109,21 @@ public:
                 response = "";
                 for (u_short i = 0; i < levelButtons.size(); ++i)
                 {
-                    if (levelButtons[i].isClicked(mouseButtonPressed->position))
+                    if (levelButtons[i].getButton().isClicked(mouseButtonPressed->position))
                     {
                         response = std::to_string(i + 1);
                         return;
                     }
                 }
             }
+        }
+    }
+
+    void setLevelCompleted(u_short level)
+    {
+        if (level <= levelButtons.size())
+        {
+            levelButtons[level - 1].setCompleted(true);
         }
     }
 
@@ -101,6 +138,6 @@ public:
 
 private:
     sf::RectangleShape menu;
-    std::vector<Button> levelButtons = {};
+    std::vector<Level> levelButtons = {};
     u_short levelCount = 0;
 };
