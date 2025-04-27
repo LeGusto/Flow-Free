@@ -16,4 +16,7 @@ namespace Defaults
     const sf::Color COLORNODE_COLOR = sf::Color::Black;
 
     const sf::Vector2f MENU_BUTTON_SIZE = sf::Vector2f(200, 50);
+    const sf::Vector2f ACTION_BUTTON_SIZE = sf::Vector2f(100, 50);
+    const int BUTTON_OUTLINE_THICKNESS = 2;
+    const int BUTTON_PADDING = 20;
 }

@@ -98,9 +98,12 @@ public:
             pathMakerHead->draw_cell(window);
         }
         pathMaker.drawPaths(window);
-        undoButton.draw(window);
-        redoButton.draw(window);
-        returnButton.draw(window);
+        if (remainingSources != 0)
+        {
+            undoButton.draw(window);
+            redoButton.draw(window);
+            returnButton.draw(window);
+        }
     }
 
     sf::Vector2f getCellPos(u_short row, u_short col)
@@ -151,30 +154,12 @@ public:
 
     void initializeButtons()
     {
-        float PADDING = 20;
-        float START_X = -origin.x + getGridSize().x / 2 - (3 * (100 + PADDING)) / (float)2;
+        float PADDING = Defaults::BUTTON_PADDING;
+        float startX = -origin.x + getGridSize().x / 2 - (3 * (100 + PADDING)) / (float)2;
 
-        undoButton.setSize(sf::Vector2f(100, 50));
-        undoButton.setPosition(sf::Vector2f(START_X, -origin.y - 60));
-        undoButton.setColor(sf::Color::Black);
-        undoButton.setOutlineColor(sf::Color::White);
-        undoButton.setText("Undo");
-        undoButton.setOutlineThickness(2);
-
-        redoButton.setSize(sf::Vector2f(100, 50));
-        redoButton.setPosition(sf::Vector2f(START_X + redoButton.getSize().x + PADDING, -origin.y - 60));
-        redoButton.setColor(sf::Color::Black);
-        redoButton.setText("Redo");
-        redoButton.setOutlineColor(sf::Color::White);
-        redoButton.setOutlineThickness(2);
-
-        returnButton.setSize(sf::Vector2f(100, 50));
-        returnButton.setPosition(sf::Vector2f(START_X + 2 * (returnButton.getSize().x + PADDING), -origin.y - 60));
-        returnButton.setColor(sf::Color::Black);
-        returnButton.setText("Return");
-        returnButton.setTextColor(sf::Color::Red);
-        returnButton.setOutlineColor(sf::Color::Red);
-        returnButton.setOutlineThickness(2);
+        undoButton.setPosition(sf::Vector2f(startX, -origin.y - 60));
+        redoButton.setPosition(sf::Vector2f(startX + redoButton.getSize().x + PADDING, -origin.y - 60));
+        returnButton.setPosition(sf::Vector2f(startX + 2 * (returnButton.getSize().x + PADDING), -origin.y - 60));
     }
 
     void setCellSize(u_short cellSize) override
@@ -365,7 +350,7 @@ private:
     std::vector<ColorNodes> colorNodes = {};
     PathMaker pathMaker = PathMaker(&origin, &remainingSources);
     ActionManager actionManager = ActionManager();
-    Button undoButton = Button();
-    Button redoButton = Button();
-    Button returnButton = Button();
+    Button undoButton = makeUndoButton();
+    Button redoButton = makeRedoButton();
+    Button returnButton = makeReturnButton();
 };

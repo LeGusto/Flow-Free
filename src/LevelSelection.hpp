@@ -26,7 +26,7 @@ public:
     }
 
 public:
-    Button button;
+    Button button = makeLevelButton();
     bool completed = false;
 };
 
@@ -46,9 +46,10 @@ public:
 
         float buttonWidth = 100;
         float buttonHeight = 50;
-        float buttonSpacing = 10;
+        float buttonSpacing = Defaults::BUTTON_PADDING;
 
         float menuWidth = menu.getSize().x;
+        float menuHeight = menu.getSize().y;
         float menuX = menu.getPosition().x;
         float menuY = menu.getPosition().y;
 
@@ -65,20 +66,17 @@ public:
             Level lvl = Level();
             Button &button = lvl.getButton();
 
-            button.setTextSize(20);
-            button.setSize(sf::Vector2f(buttonWidth, buttonHeight));
-            button.setPosition(sf::Vector2f(xOffset, yOffset));
             button.setText(("Level " + std::to_string(i + 1)));
-
-            button.setColor(sf::Color::Black);
-            button.setOutlineColor(sf::Color::White);
-            button.setOutlineThickness(2);
-            button.setTextColor(sf::Color::White);
+            button.setPosition(sf::Vector2f(xOffset, yOffset));
 
             levelButtons.push_back(std::move(lvl));
 
             xOffset += buttonWidth + buttonSpacing;
         }
+
+        returnButton.setSize(sf::Vector2f(menuWidth, 50));
+        returnButton.setPosition(sf::Vector2f(menuX + menuWidth / 2 - returnButton.getSize().x / 2,
+                                              menuY + menuHeight + buttonSpacing));
     };
     ~LevelSelection() = default;
 
@@ -115,6 +113,10 @@ public:
                         return;
                     }
                 }
+                if (returnButton.isClicked(mouseButtonPressed->position))
+                {
+                    response = "Return";
+                }
             }
         }
     }
@@ -134,10 +136,12 @@ public:
         {
             button.draw(window);
         }
+        returnButton.draw(window);
     };
 
 private:
     sf::RectangleShape menu;
+    Button returnButton = makeReturnButton();
     std::vector<Level> levelButtons = {};
     u_short levelCount = 0;
 };

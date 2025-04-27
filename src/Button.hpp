@@ -2,17 +2,18 @@
 #include <iostream>
 #include <SFML/Graphics.hpp>
 #include <functional>
+#include "Defaults.hpp"
 
 class Button
 {
 public:
     Button()
     {
-        font = sf::Font("src/ARIAL.TTF");
         if (!font.openFromFile("src/ARIAL.TTF"))
         {
             std::cerr << "Error loading font" << std::endl;
         }
+        text.setFont(font);
     };
 
     Button(const Button &other)
@@ -24,6 +25,7 @@ public:
 
     void setText(const std::string &label)
     {
+        text.setFont(font);
         text.setString(label);
         text.setPosition(sf::Vector2f(
             shape.getPosition().x + (shape.getSize().x - text.getLocalBounds().size.x) / 2,
@@ -38,7 +40,7 @@ public:
         shape.setPosition(position);
         text.setPosition(sf::Vector2f(
             position.x + (shape.getSize().x - text.getLocalBounds().size.x) / 2,
-            position.y + (shape.getSize().y - text.getLocalBounds().size.y) / 2 - 5));
+            position.y + (shape.getSize().y - text.getLocalBounds().size.y) / 2 - text.getCharacterSize() / 3));
     }
     void setColor(sf::Color color)
     {
@@ -79,7 +81,76 @@ public:
     }
 
 private:
-    mutable sf::Font font;
+    sf::Font font;
     sf::Text text = sf::Text(font);
     sf::RectangleShape shape;
 };
+
+Button makeReturnButton()
+{
+    Button button = Button();
+    button.setSize(sf::Vector2f(100, 50));
+    button.setColor(sf::Color::Black);
+    button.setText("Return");
+    button.setTextColor(sf::Color::Red);
+    button.setOutlineColor(sf::Color::Red);
+    button.setOutlineThickness(Defaults::BUTTON_OUTLINE_THICKNESS);
+    return button;
+}
+
+Button makeLevelButton()
+{
+    Button button = Button();
+    button.setTextSize(20);
+    button.setSize(sf::Vector2f(100, 50));
+    button.setColor(sf::Color::Black);
+    button.setOutlineColor(sf::Color::White);
+    button.setOutlineThickness(Defaults::BUTTON_OUTLINE_THICKNESS);
+    button.setTextColor(sf::Color::White);
+    return button;
+}
+
+Button makeUndoButton()
+{
+    Button button = Button();
+    button.setSize(Defaults::ACTION_BUTTON_SIZE);
+    button.setColor(sf::Color::Black);
+    button.setOutlineColor(sf::Color::White);
+    button.setText("Undo");
+    button.setOutlineThickness(Defaults::BUTTON_OUTLINE_THICKNESS);
+    return button;
+}
+
+Button makeRedoButton()
+{
+    Button button = Button();
+    button.setSize(Defaults::ACTION_BUTTON_SIZE);
+    button.setColor(sf::Color::Black);
+    button.setOutlineColor(sf::Color::White);
+    button.setText("Redo");
+    button.setOutlineThickness(Defaults::BUTTON_OUTLINE_THICKNESS);
+    return button;
+}
+
+Button makeStartButton()
+{
+    Button button = Button();
+    button.setSize(Defaults::MENU_BUTTON_SIZE);
+    button.setColor(sf::Color::Black);
+    button.setOutlineColor(sf::Color::White);
+    button.setText("Start");
+    button.setOutlineThickness(Defaults::BUTTON_OUTLINE_THICKNESS);
+    return button;
+}
+
+Button makeExitButton()
+{
+    Button button = Button();
+    button.setSize(Defaults::MENU_BUTTON_SIZE);
+    button.setColor(sf::Color::Black);
+    button.setOutlineColor(sf::Color::Red);
+    button.setText("Exit");
+    button.setTextColor(sf::Color::Red);
+    button.setOutlineThickness(Defaults::BUTTON_OUTLINE_THICKNESS);
+    return button;
+}

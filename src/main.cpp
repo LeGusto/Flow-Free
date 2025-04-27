@@ -4,12 +4,14 @@
 #include "MainMenu.hpp"
 #include "LevelReader.hpp"
 #include "LevelSelection.hpp"
+#include "CompletedScreen.hpp"
 
 enum class GameState
 {
     MAIN_MENU,
     SELECT_LEVEL,
-    PLAYING
+    PLAYING,
+    COMPLETED_LEVEL
 };
 
 int main()
@@ -22,6 +24,7 @@ int main()
     FlowGrid grid = readLevel(2, window);
     MainMenu mainMenu = MainMenu(window);
     LevelSelection levelSelection = LevelSelection(window);
+    CompletedScreen completedScreen = CompletedScreen(window);
 
     std::string response = "";
     u_short currLevel = -1;
@@ -51,7 +54,11 @@ int main()
             else if (gameState == GameState::SELECT_LEVEL)
             {
                 levelSelection.handleClick(event, response);
-                if (response != "")
+                if (response == "Return")
+                {
+                    gameState = GameState::MAIN_MENU;
+                }
+                else if (response != "")
                 {
                     currLevel = std::stoi(response);
                     grid = std::move(readLevel(currLevel, window));
@@ -68,6 +75,14 @@ int main()
                 else if (grid.isCompleted())
                 {
                     levelSelection.setLevelCompleted(currLevel);
+                    gameState = GameState::COMPLETED_LEVEL;
+                }
+            }
+            else if (gameState == GameState::COMPLETED_LEVEL)
+            {
+                completedScreen.handleClick(event, response);
+                if (response == "Return")
+                {
                     gameState = GameState::SELECT_LEVEL;
                 }
             }
@@ -75,13 +90,9 @@ int main()
 
         window.clear();
 
-        // grid.draw(window);
-        // undoButton.draw(window);
-        // redoButton.draw(window);
         if (gameState == GameState::MAIN_MENU)
         {
             mainMenu.draw(window);
-            // mainMenu.handleInput(sf::Mouse::getPosition(window));
         }
         else if (gameState == GameState::SELECT_LEVEL)
         {
@@ -90,6 +101,11 @@ int main()
         else if (gameState == GameState::PLAYING)
         {
             grid.draw(window);
+        }
+        else if (gameState == GameState::COMPLETED_LEVEL)
+        {
+            grid.draw(window);
+            completedScreen.draw(window);
         }
 
         window.display();
