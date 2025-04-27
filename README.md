@@ -35,7 +35,7 @@ A C++ implementation of the popular Flow-Free puzzle game using the SFML library
    sudo apt install libsfml-dev cmake g++
    ```  
     
-- On Windows:
+- On Windows:  
   Download and install [SFML](https://www.sfml-dev.org/download/).  
   Ensure CMake and a compatible compiler (e.g., Visual Studio) are installed.  
 - On macOS:
