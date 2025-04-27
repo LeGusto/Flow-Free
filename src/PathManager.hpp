@@ -113,6 +113,7 @@ struct Path
             extendLine(cell, prevCell);
     }
 
+    // Remove a completed path from the grid
     void clearPath()
     {
         while (!cells.empty())
@@ -126,6 +127,8 @@ struct Path
         }
         completed = false;
     }
+
+    // Clear the path when it is not yet completed
     void resetPath()
     {
         cells.back()->setOutlineColor(Defaults::OUTLINE_COLOR);
@@ -134,7 +137,7 @@ struct Path
         completed = false;
     }
 
-    // Update cell path property for all cells in the path
+    // Update the path cell colors and remaining sources
     void finalizePath()
     {
         for (auto &cell : cells)
@@ -151,6 +154,7 @@ struct Path
         }
     }
 
+    // Swap the path with another path, used for undo/redo
     void swapPath(Path &path)
     {
         this->cells = path.cells;
@@ -167,7 +171,6 @@ public:
 
     void startPath(Cell *startCell, sf::Color color)
     {
-
         if (allPaths.find(startCell->getColor().toInteger()) == allPaths.end())
         {
             allPaths[startCell->getColor().toInteger()] = Path(origin, startCell->color, remainingSources);
@@ -180,13 +183,14 @@ public:
         isDrawing = true;
         currPath->extendPath(startCell);
     }
+
     ~PathMaker()
     {
         currPath = nullptr;
         origin = nullptr;
     }
 
-    // Called when a path is completed (reached an end source)
+    // Called when a path is completed
     void completePath()
     {
         isDrawing = false;
@@ -195,6 +199,7 @@ public:
         isDrawing = false;
     }
 
+    // Check if the path is possible
     bool validatePath(std::vector<Cell *> &cellPath)
     {
         if (cellPath.size() == 0)
@@ -202,7 +207,7 @@ public:
 
         Cell *lastCell = currPath->cells.back();
 
-        // Current endpoint of path is the same as the last cell in the path
+        // Current endpoint of path is the same as the last cell already in the path
         if (lastCell == cellPath.back())
         {
             return false;
@@ -240,6 +245,8 @@ public:
         return true;
     }
 
+    // Checks if the cell is already part of the path
+    // If it is, shrink the path down to that cell
     bool traceBackPath(Cell *cell)
     {
         Cell *lastCell = currPath->cells.back();
@@ -259,6 +266,7 @@ public:
         return false;
     }
 
+    // Add cells to the current path
     bool addCells(std::vector<Cell *> &cells)
     {
         if (!isDrawing)
@@ -313,6 +321,7 @@ public:
     {
         return currPath;
     }
+
     Path *getPath(int id)
     {
         return &allPaths[id];
@@ -326,7 +335,7 @@ public:
         }
     }
 
-    // Update pointer when the flowgrid is moved
+    // Update pointer when the FlowGrid is moved
     void updateRemainingSources(u_short *remainingSources)
     {
         this->remainingSources = remainingSources;

@@ -14,8 +14,7 @@ std::unordered_map<char, sf::Color> colorMap = {
     {'O', sf::Color(255, 165, 0)},
     {'P', sf::Color(128, 0, 128)}};
 
-std::vector<ColorNodes>
-    colorNodes;
+std::vector<ColorNodes> colorNodes;
 std::vector<std::vector<bool>> cellExists;
 
 FlowGrid readLevel(int level, sf::RenderWindow &window)

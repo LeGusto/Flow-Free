@@ -78,8 +78,11 @@ public:
         returnButton.setPosition(sf::Vector2f(menuX + menuWidth / 2 - returnButton.getSize().x / 2,
                                               menuY + menuHeight + buttonSpacing));
     };
+
     ~LevelSelection() = default;
 
+    // Get the total amount of levels
+    // This is done by counting the number of files in the levels directory
     void calculateLevelCount()
     {
         auto dirIter = std::filesystem::directory_iterator("src/levels");

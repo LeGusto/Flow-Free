@@ -23,7 +23,6 @@ public:
         initializeButtons();
     }
 
-    // FlowGrid &operator=(const FlowGrid &other) = delete;
     FlowGrid &operator=(FlowGrid &&other) noexcept
     {
         if (this != &other)
@@ -77,6 +76,7 @@ public:
             cols * cellSize + (cols + 1) * gridLineThickness,
             rows * cellSize + (rows + 1) * gridLineThickness);
     }
+
     bool isDrawing() { return pathMaker.isPathDrawing(); }
 
     void draw(sf::RenderWindow &window)
@@ -182,6 +182,7 @@ public:
         }
     };
 
+    // User path drawing
     void makePath(int x, int y)
     {
         x += origin.x;
@@ -217,8 +218,10 @@ public:
                 return;
             }
 
+            // Get the full path from the previous cell to the current cell
             tracePath(cell, prevCell);
 
+            // If the action is successful and a path is completed, add the path to the action manager
             if (pathMaker.addCells(pathTemp) && !pathMaker.isPathDrawing())
             {
                 actionManager.undoAddAction(Action(Action::ADD, pathMaker.getPath(prevCell->getColor().toInteger())));
@@ -226,6 +229,7 @@ public:
         }
         else if (cell->colorNode)
         {
+            // Start a new path
             pathMaker.startPath(cell, cell->getColor());
         }
     }

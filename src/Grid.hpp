@@ -14,10 +14,4 @@ public:
     virtual u_short getRows() const = 0;
     virtual u_short getCols() const = 0;
     virtual sf::Vector2f getGridSize() const = 0;
-
-private:
-    u_short rows = 0;
-    u_short cols = 0;
-    u_short cellSize = 0;
-    u_short gridLineThickness = 0;
 };

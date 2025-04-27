@@ -24,6 +24,8 @@ public:
         shape = other.shape;
     }
 
+    ~Button() = default;
+
     void setText(const std::string &label)
     {
         text.setFont(font);
@@ -32,10 +34,12 @@ public:
             shape.getPosition().x + (shape.getSize().x - text.getLocalBounds().size.x) / 2,
             shape.getPosition().y + (shape.getSize().y - text.getLocalBounds().size.y) / 2 - text.getCharacterSize() / 3));
     }
+
     void setSize(sf::Vector2f size)
     {
         shape.setSize(size);
     }
+
     void setPosition(sf::Vector2f position)
     {
         shape.setPosition(position);
@@ -43,22 +47,27 @@ public:
             position.x + (shape.getSize().x - text.getLocalBounds().size.x) / 2,
             position.y + (shape.getSize().y - text.getLocalBounds().size.y) / 2 - text.getCharacterSize() / 3));
     }
+
     void setColor(sf::Color color)
     {
         shape.setFillColor(color);
     }
+
     void setOutlineColor(sf::Color color)
     {
         shape.setOutlineColor(color);
     }
+
     void setOutlineThickness(float thickness)
     {
         shape.setOutlineThickness(thickness);
     }
+
     void setTextColor(sf::Color color)
     {
         text.setFillColor(color);
     }
+
     void setTextSize(u_short size)
     {
         text.setCharacterSize(size);
