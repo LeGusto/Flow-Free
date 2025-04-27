@@ -1,0 +1,32 @@
+name: Build and Release
+
+on:
+  release:
+    types: [published]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up CMake
+        uses: lukka/get-cmake@v3
+
+      - name: Install SFML
+        run: sudo apt-get install -y libsfml-dev
+
+      - name: Build the project
+        run: |
+          mkdir build
+          cd build
+          cmake ..
+          make
+
+      - name: Upload binary
+        uses: actions/upload-artifact@v3
+        with:
+          name: FlowFree
+          path: build/FlowFree
