@@ -68,6 +68,11 @@ public:
         return shape.getSize();
     }
 
+    void setTextRotation(sf::Angle angle)
+    {
+        text.setRotation(angle);
+    }
+
     void draw(sf::RenderWindow &window)
     {
         window.draw(shape);
@@ -113,10 +118,11 @@ Button makeLevelButton()
 Button makeUndoButton()
 {
     Button button = Button();
-    button.setSize(Defaults::ACTION_BUTTON_SIZE);
+    button.setSize(sf::Vector2f(50, 50));
     button.setColor(sf::Color::Black);
     button.setOutlineColor(sf::Color::White);
-    button.setText("Undo");
+    button.setTextSize(40);
+    button.setText("<");
     button.setOutlineThickness(Defaults::BUTTON_OUTLINE_THICKNESS);
     return button;
 }
@@ -124,10 +130,11 @@ Button makeUndoButton()
 Button makeRedoButton()
 {
     Button button = Button();
-    button.setSize(Defaults::ACTION_BUTTON_SIZE);
+    button.setSize(sf::Vector2f(50, 50));
     button.setColor(sf::Color::Black);
     button.setOutlineColor(sf::Color::White);
-    button.setText("Redo");
+    button.setTextSize(40);
+    button.setText(">");
     button.setOutlineThickness(Defaults::BUTTON_OUTLINE_THICKNESS);
     return button;
 }

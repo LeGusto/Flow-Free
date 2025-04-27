@@ -157,9 +157,10 @@ public:
         float PADDING = Defaults::BUTTON_PADDING;
         float startX = -origin.x + getGridSize().x / 2 - (3 * (100 + PADDING)) / (float)2;
 
-        undoButton.setPosition(sf::Vector2f(startX, -origin.y - 60));
-        redoButton.setPosition(sf::Vector2f(startX + redoButton.getSize().x + PADDING, -origin.y - 60));
-        returnButton.setPosition(sf::Vector2f(startX + 2 * (returnButton.getSize().x + PADDING), -origin.y - 60));
+        undoButton.setPosition(sf::Vector2f(-origin.x + this->getSize().x / 2 - undoButton.getSize().x - PADDING / 2, -origin.y - undoButton.getSize().y - PADDING));
+        redoButton.setPosition(sf::Vector2f(-origin.x + this->getSize().x / 2 + PADDING / 2, -origin.y - returnButton.getSize().y - PADDING));
+        returnButton.setSize(sf::Vector2f(this->getSize().x, Defaults::ACTION_BUTTON_SIZE.y));
+        returnButton.setPosition(sf::Vector2f(-origin.x + this->getSize().x / 2 - returnButton.getSize().x / 2, -origin.y + this->getSize().y + PADDING));
     }
 
     void setCellSize(u_short cellSize) override
@@ -274,6 +275,13 @@ public:
     sf::Vector2f getOrigin()
     {
         return origin;
+    }
+
+    sf::Vector2f getSize()
+    {
+        return sf::Vector2f(
+            cols * cellSize + (cols + 1) * gridLineThickness,
+            rows * cellSize + (rows + 1) * gridLineThickness);
     }
 
     void undo()
