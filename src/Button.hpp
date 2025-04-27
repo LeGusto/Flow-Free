@@ -3,13 +3,14 @@
 #include <SFML/Graphics.hpp>
 #include <functional>
 #include "Defaults.hpp"
+#include <filesystem>
 
 class Button
 {
 public:
     Button()
     {
-        if (!font.openFromFile("src/ARIAL.TTF"))
+        if (!font.openFromFile(Defaults::HOME_DIR + "/src/ARIAL.TTF"))
         {
             std::cerr << "Error loading font" << std::endl;
         }

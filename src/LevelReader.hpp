@@ -23,7 +23,7 @@ FlowGrid readLevel(int level, sf::RenderWindow &window)
     colorNodes.clear();
     cellExists.clear();
 
-    std::ifstream file("./src/levels/" + std::to_string(level) + ".txt");
+    std::ifstream file(Defaults::HOME_DIR + "/src/levels/" + std::to_string(level) + ".txt");
     if (!file.is_open())
     {
         std::cerr << "Error: Could not open level file." << std::endl;

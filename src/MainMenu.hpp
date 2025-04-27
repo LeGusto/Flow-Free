@@ -7,7 +7,7 @@ class MainMenu
 public:
     MainMenu(sf::RenderWindow &window)
     {
-        if (!font.openFromFile("src/ARIAL.TTF"))
+        if (!font.openFromFile(Defaults::HOME_DIR + "/src/ARIAL.TTF"))
         {
             std::cerr << "Error loading font" << std::endl;
         }

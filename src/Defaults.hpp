@@ -1,9 +1,12 @@
 #pragma once
 
+#include <filesystem>
 #include <SFML/Graphics.hpp>
 
 namespace Defaults
 {
+    const std::string HOME_DIR = std::filesystem::current_path().string();
+
     constexpr u_short CELL_SIZE = 50;
     constexpr u_short GRID_LINE_THICKNESS = 5;
     constexpr u_short ROWS = 10;
