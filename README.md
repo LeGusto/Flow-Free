@@ -2,10 +2,17 @@
 
 A C++ implementation of the popular Flow-Free puzzle game using the SFML library. The goal is to connect matching colored nodes on a grid without overlapping paths.
 
+![FlowPic3](https://github.com/user-attachments/assets/dbe4e78d-7175-499c-8617-47c2128ffffb)
+![FlowPic2](https://github.com/user-attachments/assets/3e7ff771-6b1a-4822-9ff8-010ed66c4a22)
+![FlowPic1](https://github.com/user-attachments/assets/90974b96-6c32-4734-bca0-a90b159b98e1)
+
+
+
+
 ## Features
 - Interactive grid-based gameplay
 - Intuitive and satisfying path drawing
-- 15+ levels loaded dynamically from text files
+- 10 levels
 - Undo/Redo functionality for paths
 
 ## Requirements
