@@ -13,6 +13,17 @@ FetchContent_Declare(SFML
     SYSTEM)
 FetchContent_MakeAvailable(SFML)
 
-add_executable(main src/main.cpp)
+add_executable(main
+    src/implementations/main.cpp
+    src/implementations/Button.cpp
+    src/implementations/FlowGrid.cpp
+    src/implementations/MainMenu.cpp
+    src/implementations/LevelReader.cpp
+    src/implementations/LevelSelection.cpp
+    src/implementations/CompletedScreen.cpp
+    src/implementations/Cells.cpp
+    src/implementations/PathManager.cpp
+    src/implementations/ActionManager.cpp
+)
 target_compile_features(main PRIVATE cxx_std_17)
 target_link_libraries(main PRIVATE SFML::Graphics SFML::Audio)

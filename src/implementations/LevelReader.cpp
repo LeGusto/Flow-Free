@@ -1,8 +1,6 @@
-#include "FlowGrid.hpp"
+#include "../headers/LevelReader.hpp"
 #include <iostream>
 #include <fstream>
-#include <unordered_map>
-#include <vector>
 
 std::unordered_map<char, sf::Color> colorMap = {
     {'R', sf::Color::Red},
@@ -11,8 +9,9 @@ std::unordered_map<char, sf::Color> colorMap = {
     {'Y', sf::Color::Yellow},
     {'M', sf::Color::Magenta},
     {'C', sf::Color::Cyan},
-    {'O', sf::Color(255, 165, 0)},
-    {'P', sf::Color(128, 0, 128)}};
+    {'O', sf::Color(255, 165, 0)}, // Orange
+    {'P', sf::Color(128, 0, 128)}  // Purple
+};
 
 std::vector<ColorNodes> colorNodes;
 std::vector<std::vector<bool>> cellExists;

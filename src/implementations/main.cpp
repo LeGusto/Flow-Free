@@ -1,10 +1,10 @@
 #include <SFML/Graphics.hpp>
-#include "Button.hpp"
-#include "FlowGrid.hpp"
-#include "MainMenu.hpp"
-#include "LevelReader.hpp"
-#include "LevelSelection.hpp"
-#include "CompletedScreen.hpp"
+#include "../headers/Button.hpp"
+#include "../headers/FlowGrid.hpp"
+#include "../headers/MainMenu.hpp"
+#include "../headers/LevelReader.hpp"
+#include "../headers/LevelSelection.hpp"
+#include "../headers/CompletedScreen.hpp"
 
 enum class GameState
 {

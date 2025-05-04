@@ -1,8 +1,8 @@
+#pragma once
+
 #include <iostream>
 #include <vector>
 #include <SFML/Graphics.hpp>
-
-#pragma once
 
 class Grid
 {
