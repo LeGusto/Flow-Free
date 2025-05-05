@@ -13,6 +13,27 @@ FetchContent_Declare(SFML
     SYSTEM)
 FetchContent_MakeAvailable(SFML)
 
+FetchContent_Declare(Catch2
+  GIT_REPOSITORY https://github.com/catchorg/Catch2.git
+  GIT_TAG        v3.4.0 # or a later release
+)
+
+FetchContent_MakeAvailable(Catch2)
+
+add_executable(tests 
+    src/tests/pathTests.cpp
+    src/tests/actionTests.cpp
+    src/implementations/Button.cpp
+    src/implementations/FlowGrid.cpp
+    src/implementations/MainMenu.cpp
+    src/implementations/LevelReader.cpp
+    src/implementations/LevelSelection.cpp
+    src/implementations/CompletedScreen.cpp
+    src/implementations/Cells.cpp
+    src/implementations/PathManager.cpp
+    src/implementations/ActionManager.cpp
+)
+
 add_executable(main
     src/implementations/main.cpp
     src/implementations/Button.cpp
@@ -26,4 +47,6 @@ add_executable(main
     src/implementations/ActionManager.cpp
 )
 target_compile_features(main PRIVATE cxx_std_17)
-target_link_libraries(main PRIVATE SFML::Graphics SFML::Audio)
+target_link_libraries(main PRIVATE SFML::Graphics)
+target_link_libraries(tests PRIVATE Catch2::Catch2WithMain SFML::Graphics)
+

@@ -23,9 +23,9 @@ struct Path
     std::vector<Cell *> cells;
     std::vector<sf::Vertex> line;
     sf::Color color;
-    bool completed;
-    sf::Vector2f *origin;
-    u_short *remainingSources;
+    bool completed = false;
+    sf::Vector2f *origin = nullptr;
+    u_short *remainingSources = nullptr;
 };
 
 class PathMaker

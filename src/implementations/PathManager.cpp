@@ -187,8 +187,10 @@ bool PathMaker::validatePath(std::vector<Cell *> &cellPath)
         return false;
     }
 
-    int rStep = lastCell->row - cellPath[0]->row;
-    int cStep = lastCell->col - cellPath[0]->col;
+    u_int rStep = lastCell->row - cellPath[0]->row;
+    u_int cStep = lastCell->col - cellPath[0]->col;
+    u_int prevR = lastCell->row;
+    u_int prevC = lastCell->col;
 
     if (abs(rStep) > 0 && abs(cStep) > 0)
         return false;
@@ -196,6 +198,10 @@ bool PathMaker::validatePath(std::vector<Cell *> &cellPath)
     for (int i = 0; i < cellPath.size(); ++i)
     {
         if ((rStep == 0 && cellPath[i]->row != lastCell->row) || (cStep == 0 && cellPath[i]->col != lastCell->col))
+        {
+            return false;
+        }
+        if (abs(cellPath[i]->row - prevR) != 1 && abs(cellPath[i]->col - prevC) != 1)
         {
             return false;
         }
@@ -215,6 +221,9 @@ bool PathMaker::validatePath(std::vector<Cell *> &cellPath)
                 cellPath.pop_back();
             }
         }
+
+        prevR = cellPath[i]->row;
+        prevC = cellPath[i]->col;
     }
     return true;
 }

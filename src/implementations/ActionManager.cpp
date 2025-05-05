@@ -31,7 +31,7 @@ void ActionManager::undo()
     {
     case Action::ADD:
         action.pathClone = *action.path;
-        redoStack.emplace_back(action);
+        redoAddAction(action);
         action.path->clearPath();
         break;
     case Action::REMOVE:
@@ -53,7 +53,7 @@ void ActionManager::redo()
     {
     case Action::ADD:
         action.path->swapPath(action.pathClone);
-        undoStack.emplace_back(action);
+        undoAddAction(action);
         break;
     case Action::REMOVE:
         break;
