@@ -34,10 +34,6 @@ void ActionManager::undo()
         redoAddAction(action);
         action.path->clearPath();
         break;
-    case Action::REMOVE:
-        break;
-    case Action::COMPLETE:
-        break;
     }
 }
 
@@ -54,10 +50,6 @@ void ActionManager::redo()
     case Action::ADD:
         action.path->swapPath(action.pathClone);
         undoAddAction(action);
-        break;
-    case Action::REMOVE:
-        break;
-    case Action::COMPLETE:
         break;
     }
 }

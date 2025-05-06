@@ -8,9 +8,7 @@ struct Action
 {
     enum Type
     {
-        ADD,
-        REMOVE,
-        COMPLETE
+        ADD
     };
 
     Type type;
