@@ -187,10 +187,10 @@ bool PathMaker::validatePath(std::vector<Cell *> &cellPath)
         return false;
     }
 
-    u_int rStep = lastCell->row - cellPath[0]->row;
-    u_int cStep = lastCell->col - cellPath[0]->col;
-    u_int prevR = lastCell->row;
-    u_int prevC = lastCell->col;
+    unsigned int rStep = lastCell->row - cellPath[0]->row;
+    unsigned int cStep = lastCell->col - cellPath[0]->col;
+    unsigned int prevR = lastCell->row;
+    unsigned int prevC = lastCell->col;
 
     if (abs(rStep) > 0 && abs(cStep) > 0)
         return false;
