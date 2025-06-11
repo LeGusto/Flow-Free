@@ -5,7 +5,7 @@
 TEST_CASE("ActionManager: Undo and Redo functionality", "[ActionManager]")
 {
     sf::Vector2f origin(0, 0);
-    u_short remainingSources = 1;
+    unsigned short remainingSources = 1;
     Path path(&origin, sf::Color::Red, &remainingSources);
     Cell cell1(0, 0, sf::Vector2f(10, 10), 0, 0);
     path.extendPath(&cell1);

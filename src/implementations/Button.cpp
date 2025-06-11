@@ -60,7 +60,7 @@ void Button::setTextColor(sf::Color color)
     text.setFillColor(color);
 }
 
-void Button::setTextSize(u_short size)
+void Button::setTextSize(unsigned short size)
 {
     text.setCharacterSize(size);
 }

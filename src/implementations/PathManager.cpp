@@ -1,7 +1,7 @@
 #include "../headers/PathManager.hpp"
 
 Path::Path() = default;
-Path::Path(sf::Vector2f *origin, sf::Color color, u_short *remainingSources) : origin(origin), color(color), remainingSources(remainingSources) {}
+Path::Path(sf::Vector2f *origin, sf::Color color, unsigned short *remainingSources) : origin(origin), color(color), remainingSources(remainingSources) {}
 Path::~Path() = default;
 
 void Path::drawPath(sf::RenderWindow &window)
@@ -145,7 +145,7 @@ void Path::swapPath(Path &path)
     finalizePath();
 }
 
-PathMaker::PathMaker(sf::Vector2f *origin, u_short *remainingSources) : origin(origin), remainingSources(remainingSources) {}
+PathMaker::PathMaker(sf::Vector2f *origin, unsigned short *remainingSources) : origin(origin), remainingSources(remainingSources) {}
 PathMaker::~PathMaker()
 {
     currPath = nullptr;
@@ -313,7 +313,7 @@ void PathMaker::drawPaths(sf::RenderWindow &window)
     }
 }
 
-void PathMaker::updateRemainingSources(u_short *remainingSources)
+void PathMaker::updateRemainingSources(unsigned short *remainingSources)
 {
     this->remainingSources = remainingSources;
     for (auto &[key, p] : allPaths)

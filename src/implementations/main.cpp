@@ -27,7 +27,7 @@ int main()
     CompletedScreen completedScreen = CompletedScreen(window);
 
     std::string response = "";
-    u_short currLevel = -1;
+    unsigned short currLevel = -1;
 
     while (window.isOpen())
     {

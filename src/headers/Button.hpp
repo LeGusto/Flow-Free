@@ -20,7 +20,7 @@ public:
     void setOutlineColor(sf::Color color);
     void setOutlineThickness(float thickness);
     void setTextColor(sf::Color color);
-    void setTextSize(u_short size);
+    void setTextSize(unsigned short size);
     sf::Vector2f getSize();
     void setTextRotation(sf::Angle angle);
     void draw(sf::RenderWindow &window);

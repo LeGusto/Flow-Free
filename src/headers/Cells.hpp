@@ -7,14 +7,14 @@
 
 struct Cell
 {
-    u_short row;
-    u_short col;
+    unsigned short row;
+    unsigned short col;
     bool colorNode;
     int path;
     sf::RectangleShape shape;
     sf::Color color;
 
-    Cell(u_short row, u_short col, sf::Vector2f position, u_short cellSize, u_short gridLineThickness);
+    Cell(unsigned short row, unsigned short col, sf::Vector2f position, unsigned short cellSize, unsigned short gridLineThickness);
 
     virtual void draw_cell(sf::RenderWindow &window);
     virtual sf::Color getColor() const;
@@ -28,7 +28,7 @@ struct SourceCell : public Cell
 {
     sf::CircleShape *circle = nullptr;
 
-    SourceCell(u_short row, u_short col, sf::Vector2f position, u_short cellSize, u_short gridLineThickness, sf::CircleShape &circle);
+    SourceCell(unsigned short row, unsigned short col, sf::Vector2f position, unsigned short cellSize, unsigned short gridLineThickness, sf::CircleShape &circle);
 
     void draw_cell(sf::RenderWindow &window) override;
     void setColor(sf::Color color) override;
@@ -38,17 +38,17 @@ struct SourceCell : public Cell
 
 struct BlockingCell : public Cell
 {
-    BlockingCell(u_short row, u_short col, sf::Vector2f position, u_short cellSize, u_short gridLineThickness);
+    BlockingCell(unsigned short row, unsigned short col, sf::Vector2f position, unsigned short cellSize, unsigned short gridLineThickness);
 
     void setColor(sf::Color color) override;
 };
 
 struct ColorNodes
 {
-    u_short row;
-    u_short col;
+    unsigned short row;
+    unsigned short col;
     sf::CircleShape circle;
     sf::Color color;
 
-    ColorNodes(u_short row, u_short col, sf::Color color);
+    ColorNodes(unsigned short row, unsigned short col, sf::Color color);
 };

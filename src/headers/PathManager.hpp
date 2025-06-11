@@ -8,7 +8,7 @@
 struct Path
 {
     Path();
-    Path(sf::Vector2f *origin, sf::Color color, u_short *remainingSources);
+    Path(sf::Vector2f *origin, sf::Color color, unsigned short *remainingSources);
     ~Path();
 
     void drawPath(sf::RenderWindow &window);
@@ -25,14 +25,14 @@ struct Path
     sf::Color color;
     bool completed = false;
     sf::Vector2f *origin = nullptr;
-    u_short *remainingSources = nullptr;
+    unsigned short *remainingSources = nullptr;
 };
 
 class PathMaker
 {
 public:
     PathMaker() = delete;
-    PathMaker(sf::Vector2f *origin, u_short *remainingSources);
+    PathMaker(sf::Vector2f *origin, unsigned short *remainingSources);
     ~PathMaker();
 
     void startPath(Cell *startCell, sf::Color color);
@@ -46,12 +46,12 @@ public:
     Path *getPath();
     Path *getPath(int id);
     void drawPaths(sf::RenderWindow &window);
-    void updateRemainingSources(u_short *remainingSources);
+    void updateRemainingSources(unsigned short *remainingSources);
 
 private:
     bool isDrawing = false;
     sf::Vector2f *origin = nullptr;
     Path *currPath = nullptr;
-    u_short *remainingSources = nullptr;
+    unsigned short *remainingSources = nullptr;
     std::map<int, Path> allPaths;
 };

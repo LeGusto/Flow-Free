@@ -27,14 +27,14 @@ public:
     ~LevelSelection();
 
     void calculateLevelCount();
-    u_short getLevelCount() const;
+    unsigned short getLevelCount() const;
     void handleClick(const std::optional<sf::Event> &event, std::string &response);
-    void setLevelCompleted(u_short level);
+    void setLevelCompleted(unsigned short level);
     void draw(sf::RenderWindow &window);
 
 private:
     sf::RectangleShape menu;
     Button returnButton = makeReturnButton();
     std::vector<Level> levelButtons;
-    u_short levelCount;
+    unsigned short levelCount;
 };

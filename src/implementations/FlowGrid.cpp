@@ -1,6 +1,6 @@
 #include "../headers/FlowGrid.hpp"
 
-FlowGrid::FlowGrid(u_short rows, u_short cols, u_short cellSize, std::vector<ColorNodes> colorNodes, std::vector<std::vector<bool>> cellExists, sf::RenderWindow &window)
+FlowGrid::FlowGrid(unsigned short rows, unsigned short cols, unsigned short cellSize, std::vector<ColorNodes> colorNodes, std::vector<std::vector<bool>> cellExists, sf::RenderWindow &window)
     : rows(rows), cols(cols), cellSize(cellSize), colorNodes(std::move(colorNodes))
 {
     origin = sf::Vector2f(
@@ -45,9 +45,9 @@ FlowGrid &FlowGrid::operator=(FlowGrid &&other) noexcept
 
 FlowGrid::~FlowGrid()
 {
-    for (u_short row = 0; row < rows; ++row)
+    for (unsigned short row = 0; row < rows; ++row)
     {
-        for (u_short col = 0; col < cols; ++col)
+        for (unsigned short col = 0; col < cols; ++col)
         {
             delete cells[row][col];
         }
@@ -55,10 +55,10 @@ FlowGrid::~FlowGrid()
     cells.clear();
 }
 
-u_short FlowGrid::getCellSize() const { return cellSize; }
-u_short FlowGrid::getGridLineThickness() const { return gridLineThickness; }
-u_short FlowGrid::getRows() const { return rows; }
-u_short FlowGrid::getCols() const { return cols; }
+unsigned short FlowGrid::getCellSize() const { return cellSize; }
+unsigned short FlowGrid::getGridLineThickness() const { return gridLineThickness; }
+unsigned short FlowGrid::getRows() const { return rows; }
+unsigned short FlowGrid::getCols() const { return cols; }
 sf::Vector2f FlowGrid::getGridSize() const
 {
     return sf::Vector2f(
@@ -71,9 +71,9 @@ bool FlowGrid::isDrawing() { return pathMaker.isPathDrawing(); }
 void FlowGrid::draw(sf::RenderWindow &window)
 {
     Cell *pathMakerHead = pathMaker.getLastCell();
-    for (u_short row = 0; row < rows; ++row)
+    for (unsigned short row = 0; row < rows; ++row)
     {
-        for (u_short col = 0; col < cols; ++col)
+        for (unsigned short col = 0; col < cols; ++col)
         {
             if (cells[row][col] == nullptr)
                 continue;
@@ -95,7 +95,7 @@ void FlowGrid::draw(sf::RenderWindow &window)
     }
 }
 
-sf::Vector2f FlowGrid::getCellPos(u_short row, u_short col)
+sf::Vector2f FlowGrid::getCellPos(unsigned short row, unsigned short col)
 {
     return sf::Vector2f(
         col * cellSize + (col + 1) * gridLineThickness,
@@ -121,9 +121,9 @@ void FlowGrid::initializeShapes(std::vector<std::vector<bool>> &cellExists)
         cells[node.row][node.col] = new SourceCell(node.row, node.col, getCellPos(node.row, node.col), cellSize, gridLineThickness, node.circle);
     }
 
-    for (u_short row = 0; row < rows; ++row)
+    for (unsigned short row = 0; row < rows; ++row)
     {
-        for (u_short col = 0; col < cols; ++col)
+        for (unsigned short col = 0; col < cols; ++col)
         {
             if (cells[row][col] == nullptr)
             {
@@ -152,12 +152,12 @@ void FlowGrid::initializeButtons()
     returnButton.setPosition(sf::Vector2f(-origin.x + this->getSize().x / 2 - returnButton.getSize().x / 2, -origin.y + this->getSize().y + PADDING));
 }
 
-void FlowGrid::setCellSize(u_short cellSize)
+void FlowGrid::setCellSize(unsigned short cellSize)
 {
     this->cellSize = cellSize;
-    for (u_short row = 0; row < rows; ++row)
+    for (unsigned short row = 0; row < rows; ++row)
     {
-        for (u_short col = 0; col < cols; ++col)
+        for (unsigned short col = 0; col < cols; ++col)
         {
             cells[row][col]->shape.setSize(sf::Vector2f(cellSize, cellSize));
             cells[row][col]->shape.setPosition(getCellPos(row, col));
@@ -191,8 +191,8 @@ void FlowGrid::makePath(int x, int y)
     if (pathMaker.isPathDrawing())
     {
         // Adjust sensitivity of drawing
-        u_short x_pad = abs((cellSize + gridLineThickness) / 2 - x % (cellSize + gridLineThickness));
-        u_short y_pad = abs((cellSize + gridLineThickness) / 2 - y % (cellSize + gridLineThickness));
+        unsigned short x_pad = abs((cellSize + gridLineThickness) / 2 - x % (cellSize + gridLineThickness));
+        unsigned short y_pad = abs((cellSize + gridLineThickness) / 2 - y % (cellSize + gridLineThickness));
         if (x_pad > (cellSize + gridLineThickness) * Defaults::PATH_SENSITIVITY || y_pad > (cellSize + gridLineThickness) * Defaults::PATH_SENSITIVITY)
         {
             return;

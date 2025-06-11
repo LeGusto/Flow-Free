@@ -28,14 +28,14 @@ FlowGrid readLevel(int level, sf::RenderWindow &window)
         return FlowGrid(0, 0, 0, colorNodes, cellExists, window);
     }
 
-    u_short rows, cols;
+    unsigned short rows, cols;
     file >> rows >> cols;
 
     cellExists.resize(rows, std::vector<bool>(cols, false));
 
-    for (u_short row = 0; row < rows; ++row)
+    for (unsigned short row = 0; row < rows; ++row)
     {
-        for (u_short col = 0; col < cols; ++col)
+        for (unsigned short col = 0; col < cols; ++col)
         {
             char cellType;
             file >> cellType;

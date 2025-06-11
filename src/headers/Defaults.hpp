@@ -7,10 +7,10 @@ namespace Defaults
 {
     const std::string HOME_DIR = std::filesystem::current_path().string();
 
-    constexpr u_short CELL_SIZE = 50;
-    constexpr u_short GRID_LINE_THICKNESS = 5;
-    constexpr u_short ROWS = 10;
-    constexpr u_short COLS = 10;
+    constexpr unsigned short CELL_SIZE = 50;
+    constexpr unsigned short GRID_LINE_THICKNESS = 5;
+    constexpr unsigned short ROWS = 10;
+    constexpr unsigned short COLS = 10;
     constexpr float PATH_THICKNESS = 0.3f;
     constexpr float PATH_SENSITIVITY = 0.4f;
 

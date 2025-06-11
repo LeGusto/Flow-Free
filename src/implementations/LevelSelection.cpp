@@ -47,7 +47,7 @@ LevelSelection::LevelSelection(sf::RenderWindow &window)
     float xOffset = menuX + buttonSpacing;
     float yOffset = menuY + buttonSpacing;
 
-    for (u_short i = 0; i < levelCount; ++i)
+    for (unsigned short i = 0; i < levelCount; ++i)
     {
         if (xOffset + buttonWidth > menuX + menuWidth - buttonSpacing)
         {
@@ -76,7 +76,7 @@ void LevelSelection::calculateLevelCount()
 {
     auto dirIter = std::filesystem::directory_iterator("src/levels");
 
-    u_short fileCount = std::count_if(
+    unsigned short fileCount = std::count_if(
         begin(dirIter),
         end(dirIter),
         [](auto &entry)
@@ -85,7 +85,7 @@ void LevelSelection::calculateLevelCount()
     levelCount = fileCount;
 }
 
-u_short LevelSelection::getLevelCount() const
+unsigned short LevelSelection::getLevelCount() const
 {
     return levelCount;
 }
@@ -97,7 +97,7 @@ void LevelSelection::handleClick(const std::optional<sf::Event> &event, std::str
         if (mouseButtonPressed->button == sf::Mouse::Button::Left)
         {
             response = "";
-            for (u_short i = 0; i < levelButtons.size(); ++i)
+            for (unsigned short i = 0; i < levelButtons.size(); ++i)
             {
                 if (levelButtons[i].getButton().isClicked(mouseButtonPressed->position))
                 {
@@ -113,7 +113,7 @@ void LevelSelection::handleClick(const std::optional<sf::Event> &event, std::str
     }
 }
 
-void LevelSelection::setLevelCompleted(u_short level)
+void LevelSelection::setLevelCompleted(unsigned short level)
 {
     if (level <= levelButtons.size())
     {

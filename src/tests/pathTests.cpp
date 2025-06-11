@@ -7,7 +7,7 @@ TEST_CASE("Path initialization", "[Path]")
 {
     sf::Vector2f origin(0, 0);
     sf::Color color = sf::Color::Red;
-    u_short remainingSources = 5;
+    unsigned short remainingSources = 5;
 
     Path path(&origin, color, &remainingSources);
 
@@ -19,7 +19,7 @@ TEST_CASE("Path initialization", "[Path]")
 TEST_CASE("PathMaker initialization", "[PathMaker]")
 {
     sf::Vector2f origin(0, 0);
-    u_short remainingSources = 5;
+    unsigned short remainingSources = 5;
 
     PathMaker pathMaker(&origin, &remainingSources);
 
@@ -31,7 +31,7 @@ TEST_CASE("Path extension and shrinking", "[Path]")
 {
     sf::Vector2f origin(0, 0);
     sf::Color color = sf::Color::Blue;
-    u_short remainingSources = 5;
+    unsigned short remainingSources = 5;
 
     Path path(&origin, color, &remainingSources);
 
@@ -55,7 +55,7 @@ TEST_CASE("Path clearing", "[Path]")
 {
     sf::Vector2f origin(0, 0);
     sf::Color color = sf::Color::Green;
-    u_short remainingSources = 5;
+    unsigned short remainingSources = 5;
 
     Path path(&origin, color, &remainingSources);
 
@@ -75,7 +75,7 @@ TEST_CASE("Path clearing", "[Path]")
 TEST_CASE("Path validation 1", "[PathMaker]")
 {
     sf::Vector2f origin(0, 0);
-    u_short remainingSources = 5;
+    unsigned short remainingSources = 5;
 
     SECTION("Test row and column differences between cells in path")
     {
@@ -98,7 +98,7 @@ TEST_CASE("Path validation 1", "[PathMaker]")
     SECTION("Test invalid and valid endpoint of path")
     {
         sf::Vector2f origin(0, 0);
-        u_short remainingSources = 5;
+        unsigned short remainingSources = 5;
 
         PathMaker pathMaker(&origin, &remainingSources);
         sf::CircleShape sf1(10);
@@ -121,7 +121,7 @@ TEST_CASE("Path finalization", "[Path]")
 {
     sf::Vector2f origin(0, 0);
     sf::Color color = sf::Color::Cyan;
-    u_short remainingSources = 5;
+    unsigned short remainingSources = 5;
 
     Path path(&origin, color, &remainingSources);
 
@@ -139,7 +139,7 @@ TEST_CASE("Path finalization", "[Path]")
 TEST_CASE("PathMaker path drawing", "[PathMaker]")
 {
     sf::Vector2f origin(0, 0);
-    u_short remainingSources = 5;
+    unsigned short remainingSources = 5;
 
     PathMaker pathMaker(&origin, &remainingSources);
 
