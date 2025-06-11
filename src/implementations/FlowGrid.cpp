@@ -191,8 +191,8 @@ void FlowGrid::makePath(int x, int y)
     if (pathMaker.isPathDrawing())
     {
         // Adjust sensitivity of drawing
-        unsigned short x_pad = abs((cellSize + gridLineThickness) / 2 - x % (cellSize + gridLineThickness));
-        unsigned short y_pad = abs((cellSize + gridLineThickness) / 2 - y % (cellSize + gridLineThickness));
+        unsigned short x_pad = std::abs(static_cast<int>((cellSize + gridLineThickness) / 2 - x % (cellSize + gridLineThickness)));
+        unsigned short y_pad = std::abs(static_cast<int>((cellSize + gridLineThickness) / 2 - y % (cellSize + gridLineThickness)));
         if (x_pad > (cellSize + gridLineThickness) * Defaults::PATH_SENSITIVITY || y_pad > (cellSize + gridLineThickness) * Defaults::PATH_SENSITIVITY)
         {
             return;
@@ -231,7 +231,7 @@ void FlowGrid::tracePath(Cell *cell, Cell *prevCell)
     }
     if (cell->row == prevCell->row)
     {
-        int step = (cell->col - prevCell->col) / abs(cell->col - prevCell->col);
+        int step = (cell->col - prevCell->col) / std::abs(static_cast<int>(cell->col - prevCell->col));
         for (int c = prevCell->col + step; c != cell->col; c += step)
         {
             pathTemp.push_back(cells[cell->row][c]);
@@ -239,7 +239,7 @@ void FlowGrid::tracePath(Cell *cell, Cell *prevCell)
     }
     else if (cell->col == prevCell->col)
     {
-        int step = (cell->row - prevCell->row) / abs(cell->row - prevCell->row);
+        int step = (cell->row - prevCell->row) / std::abs(static_cast<int>(cell->row - prevCell->row));
         for (int r = prevCell->row + step; r != cell->row; r += step)
         {
             pathTemp.push_back(cells[r][cell->col]);
