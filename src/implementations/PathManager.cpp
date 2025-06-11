@@ -6,6 +6,8 @@ Path::~Path() = default;
 
 void Path::drawPath(sf::RenderWindow &window)
 {
+    if (line.empty())
+        return;
     window.draw(&line[0], line.size(), sf::PrimitiveType::TriangleStrip);
 }
 
@@ -187,10 +189,10 @@ bool PathMaker::validatePath(std::vector<Cell *> &cellPath)
         return false;
     }
 
-    unsigned int rStep = lastCell->row - cellPath[0]->row;
-    unsigned int cStep = lastCell->col - cellPath[0]->col;
-    unsigned int prevR = lastCell->row;
-    unsigned int prevC = lastCell->col;
+    short rStep = (int)lastCell->row - cellPath[0]->row;
+    short cStep = (int)lastCell->col - cellPath[0]->col;
+    unsigned short prevR = lastCell->row;
+    unsigned short prevC = lastCell->col;
 
     if (std::abs(static_cast<int>(rStep)) > 0 && std::abs(static_cast<int>(cStep)) > 0)
         return false;
@@ -201,7 +203,7 @@ bool PathMaker::validatePath(std::vector<Cell *> &cellPath)
         {
             return false;
         }
-        if (std::abs(static_cast<int>(cellPath[i]->row - prevR)) != 1 && std::abs(static_cast<int>(cellPath[i]->col - prevC) != 1))
+        if (std::abs((int)cellPath[i]->row - prevR) != 1 && std::abs((int)cellPath[i]->col - prevC) != 1)
         {
             return false;
         }
