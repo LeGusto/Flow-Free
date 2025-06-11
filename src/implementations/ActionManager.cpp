@@ -49,7 +49,7 @@ void ActionManager::redo()
     {
     case Action::ADD:
         action.path->swapPath(action.pathClone);
-        undoAddAction(action);
+        undoStack.emplace_back(std::move(action));
         break;
     }
 }
