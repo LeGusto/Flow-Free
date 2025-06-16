@@ -4,6 +4,8 @@ project(Flow-Free LANGUAGES CXX)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 set(CMAKE_CXX_STANDARD 17)
 
+enable_testing()
+
 include(FetchContent)
 FetchContent_Declare(SFML
     GIT_REPOSITORY https://github.com/SFML/SFML.git
@@ -33,6 +35,8 @@ add_executable(tests
     src/implementations/PathManager.cpp
     src/implementations/ActionManager.cpp
 )
+
+add_test(NAME RunTests COMMAND tests)
 
 add_executable(main
     src/implementations/main.cpp

@@ -42,10 +42,5 @@ jobs:
       - name: Build
         run: cmake --build build --config Release
 
-      - name: Run Tests (Linux/macOS)
-        if: runner.os != 'Windows'
-        run: ./build/bin/tests
-
-      - name: Run Tests (Windows)
-        if: runner.os == 'Windows'
-        run: build\Release\tests.exe
+      - name: Run Tests
+        run: ctest --test-dir build --output-on-failure
