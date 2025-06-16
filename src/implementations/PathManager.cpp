@@ -1,9 +1,13 @@
 #include "../headers/PathManager.hpp"
 
 Path::Path() = default;
-Path::Path(sf::Vector2f *origin, sf::Color color, unsigned short *remainingSources) : origin(origin), color(color), remainingSources(remainingSources) {}
+
+Path::Path(sf::Vector2f *origin, sf::Color color, unsigned short *remainingSources)
+    : origin(origin), color(color), remainingSources(remainingSources) {}
+
 Path::~Path() = default;
 
+// Draws the path on the given SFML render window
 void Path::drawPath(sf::RenderWindow &window)
 {
     if (line.empty())
@@ -11,6 +15,7 @@ void Path::drawPath(sf::RenderWindow &window)
     window.draw(&line[0], line.size(), sf::PrimitiveType::TriangleStrip);
 }
 
+// Shrinks the path by removing the last cell and its corresponding vertices
 void Path::shrinkPath()
 {
     if (cells.size() > 0)
@@ -20,8 +25,10 @@ void Path::shrinkPath()
         lastCell->setOutlineColor(Defaults::OUTLINE_COLOR);
         lastCell->path = -1;
         cells.pop_back();
+
         if (!line.empty())
         {
+            // Remove the last 5 vertices from the line
             for (int i = 0; i < 5; ++i)
             {
                 line.pop_back();
@@ -35,8 +42,10 @@ void Path::shrinkPath()
     }
 }
 
+// Extends the path by adding vertices between the current cell and the previous cell
 void Path::extendLine(Cell *cell, Cell *prevCell)
 {
+    // Create vertices for the line segment
     sf::Vertex vertexUp1{
         sf::Vector2f(-origin->x + prevCell->shape.getPosition().x + cell->shape.getSize().x / 2,
                      -origin->y + prevCell->shape.getPosition().y + cell->shape.getSize().y / 2),
@@ -51,6 +60,7 @@ void Path::extendLine(Cell *cell, Cell *prevCell)
 
     sf::Vector2f mod = {0, 0};
 
+    // Adjust vertices based on the direction of the path
     if (prevCell->col == cell->col)
     {
         mid.position.y += cell->shape.getSize().y * (Defaults::PATH_THICKNESS * -(cell->row - prevCell->row));
@@ -61,6 +71,8 @@ void Path::extendLine(Cell *cell, Cell *prevCell)
         mid.position.x += cell->shape.getSize().x * (Defaults::PATH_THICKNESS * -(cell->col - prevCell->col));
         mod.y += cell->shape.getSize().y * Defaults::PATH_THICKNESS;
     }
+
+    // Adjust vertex positions for thickness
     vertexDown1.position.x -= mod.x;
     vertexDown1.position.y -= mod.y;
     vertexUp1.position.x += mod.x;
@@ -69,6 +81,8 @@ void Path::extendLine(Cell *cell, Cell *prevCell)
     vertexDown2.position.y -= mod.y;
     vertexUp2.position.x += mod.x;
     vertexUp2.position.y += mod.y;
+
+    // Swap vertices for alternating rows
     if (cells.size() & 1)
     {
         std::swap(vertexUp1, vertexDown1);
@@ -76,6 +90,8 @@ void Path::extendLine(Cell *cell, Cell *prevCell)
         std::swap(vertexDown2, vertexUp2);
         std::swap(vertexUp1, vertexDown1);
     }
+
+    // Add vertices to the line
     line.push_back(std::move(mid));
     line.push_back(std::move(vertexUp1));
     line.push_back(std::move(vertexDown1));
@@ -83,10 +99,12 @@ void Path::extendLine(Cell *cell, Cell *prevCell)
     line.push_back(std::move(vertexDown2));
 }
 
+// Extends the path by adding a new cell
 void Path::extendPath(Cell *cell)
 {
     Cell *prevCell = nullptr;
 
+    // Remove the header outline color from the previous cell
     if (!cells.empty())
     {
         prevCell = cells.back();
@@ -102,12 +120,15 @@ void Path::extendPath(Cell *cell)
         extendLine(cell, prevCell);
 }
 
+// Clears the entire path
 void Path::clearPath()
 {
     while (!cells.empty())
     {
         shrinkPath();
     }
+
+    // Update the remaining sources if this path was completed before ckearing
     if (remainingSources != nullptr && completed)
     {
         ++(*remainingSources);
@@ -116,6 +137,7 @@ void Path::clearPath()
     completed = false;
 }
 
+// Resets the path to its initial state
 void Path::resetPath()
 {
     cells.back()->setOutlineColor(Defaults::OUTLINE_COLOR);
@@ -124,11 +146,11 @@ void Path::resetPath()
     completed = false;
 }
 
+// Finalizes the path, marking it as completed
 void Path::finalizePath()
 {
     for (auto &cell : cells)
     {
-
         cell->path = color.toInteger();
         cell->setColor(color);
         cell->setOutlineColor(Defaults::OUTLINE_COLOR);
@@ -140,6 +162,7 @@ void Path::finalizePath()
     }
 }
 
+// Swaps the current path with another path (for undo/redo functionality)
 void Path::swapPath(Path &path)
 {
     this->cells = path.cells;
@@ -147,13 +170,18 @@ void Path::swapPath(Path &path)
     finalizePath();
 }
 
-PathMaker::PathMaker(sf::Vector2f *origin, unsigned short *remainingSources) : origin(origin), remainingSources(remainingSources) {}
+// -----------------------------------------------------------------------------
+
+PathMaker::PathMaker(sf::Vector2f *origin, unsigned short *remainingSources)
+    : origin(origin), remainingSources(remainingSources) {}
+
 PathMaker::~PathMaker()
 {
     currPath = nullptr;
     origin = nullptr;
 }
 
+// Starts a new path from the given starting cell
 void PathMaker::startPath(Cell *startCell, sf::Color color)
 {
     if (allPaths.find(startCell->getColor().toInteger()) == allPaths.end())
@@ -169,6 +197,7 @@ void PathMaker::startPath(Cell *startCell, sf::Color color)
     currPath->extendPath(startCell);
 }
 
+// Completes the current path
 void PathMaker::completePath()
 {
     isDrawing = false;
@@ -177,6 +206,7 @@ void PathMaker::completePath()
     isDrawing = false;
 }
 
+// Validates the given path based on game rules
 bool PathMaker::validatePath(std::vector<Cell *> &cellPath)
 {
     if (cellPath.size() == 0)
@@ -230,6 +260,7 @@ bool PathMaker::validatePath(std::vector<Cell *> &cellPath)
     return true;
 }
 
+// Traces back the path to a specific cell
 bool PathMaker::traceBackPath(Cell *cell)
 {
     Cell *lastCell = currPath->cells.back();
@@ -248,6 +279,7 @@ bool PathMaker::traceBackPath(Cell *cell)
     return false;
 }
 
+// Adds cells to the current path
 bool PathMaker::addCells(std::vector<Cell *> &cells)
 {
     if (!isDrawing)
@@ -276,11 +308,13 @@ bool PathMaker::addCells(std::vector<Cell *> &cells)
     return true;
 }
 
+// Checks if a path is currently being drawn
 bool PathMaker::isPathDrawing() const
 {
     return isDrawing;
 }
 
+// Gets the last cell in the current path
 Cell *PathMaker::getLastCell() const
 {
     if (currPath == nullptr)
@@ -291,22 +325,26 @@ Cell *PathMaker::getLastCell() const
     return currPath->cells.back();
 }
 
+// Destroys the current path
 void PathMaker::destroyPath()
 {
     currPath->clearPath();
     isDrawing = false;
 }
 
+// Gets the current path
 Path *PathMaker::getPath()
 {
     return currPath;
 }
 
+// Gets a path by its ID
 Path *PathMaker::getPath(int id)
 {
     return &allPaths[id];
 }
 
+// Draws all paths on the given SFML render window
 void PathMaker::drawPaths(sf::RenderWindow &window)
 {
     for (auto &[key, p] : allPaths)
@@ -315,6 +353,7 @@ void PathMaker::drawPaths(sf::RenderWindow &window)
     }
 }
 
+// Updates the remaining sources for all paths
 void PathMaker::updateRemainingSources(unsigned short *remainingSources)
 {
     this->remainingSources = remainingSources;

@@ -41,3 +41,6 @@ jobs:
 
       - name: Build
         run: cmake --build build --config Release
+
+      - name: Run Tests
+        run: ./build/bin/tests
