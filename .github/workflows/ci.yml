@@ -48,4 +48,6 @@ jobs:
 
       - name: Run Tests (Windows)
         if: runner.os == 'Windows'
-        run: ctest --test-dir build --output-on-failure -C Release
+        run: |
+          for %f in (build\*.dll) do copy %f build\Release\
+          ctest --test-dir build --output-on-failure -C Release
