@@ -48,4 +48,4 @@ jobs:
 
       - name: Run Tests (Windows)
         if: runner.os == 'Windows'
-        run: build\bin\Release\tests.exe
+        run: ./build/bin/Release/tests.exe
