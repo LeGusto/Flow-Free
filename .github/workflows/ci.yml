@@ -49,5 +49,5 @@ jobs:
       - name: Run Tests (Windows)
         if: runner.os == 'Windows'
         run: |
-          for %f in (build\*.dll) do copy %f build\Release\
+          set PATH=%PATH%;%CD%\build
           ctest --test-dir build --output-on-failure -C Release
