@@ -42,5 +42,10 @@ jobs:
       - name: Build
         run: cmake --build build --config Release
 
-      - name: Run Tests
+      - name: Run Tests (Linux/macOS)
+        if: runner.os != 'Windows'
         run: ./build/bin/tests
+
+      - name: Run Tests (Windows)
+        if: runner.os == 'Windows'
+        run: build\Release\tests.exe
