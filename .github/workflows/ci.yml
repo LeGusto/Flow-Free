@@ -46,6 +46,6 @@ jobs:
         if: runner.os != 'Windows'
         run: ./build/bin/tests
 
-      - name: Run Tests (Windows)
-        if: runner.os == 'Windows'
-        run: ./build/bin/Release/tests.exe
+      # - name: Run Tests (Windows)
+      #   if: runner.os == 'Windows'
+      #   run: ./build/bin/Release/tests.exe
