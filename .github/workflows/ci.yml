@@ -44,10 +44,8 @@ jobs:
 
       - name: Run Tests (Linux/macOS)
         if: runner.os != 'Windows'
-        run: ctest --test-dir build --output-on-failure
+        run: ./build/bin/tests
 
       - name: Run Tests (Windows)
         if: runner.os == 'Windows'
-        run: |
-          set PATH=%PATH%;%CD%\build
-          ctest --test-dir build --output-on-failure -C Release
+        run: .build/Release/tests.exe
