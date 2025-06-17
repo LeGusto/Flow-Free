@@ -54,3 +54,9 @@ target_compile_features(main PRIVATE cxx_std_17)
 target_link_libraries(main PRIVATE SFML::Graphics)
 target_link_libraries(tests PRIVATE Catch2::Catch2WithMain SFML::Graphics)
 
+if(BUILD_SHARED_LIBS AND WIN32)
+    add_custom_command(TARGET tests POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_directory
+        ${SFML_BINARY_DIR}/bin ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}
+    )
+endif()

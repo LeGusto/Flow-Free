@@ -49,5 +49,4 @@ jobs:
       - name: Run Tests (Windows)
         if: runner.os == 'Windows'
         run: |
-          cp build/bin/Release/*.dll build/bin/Release/tests.exe
           ./build/bin/Release/tests.exe
