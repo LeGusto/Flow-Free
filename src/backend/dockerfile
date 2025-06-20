@@ -1,0 +1,22 @@
+FROM python:3.12-slim
+
+# Set environment variables
+ENV FASTAPI_APP=app.py
+ENV FASTAPI_ENV=production
+ENV PORT=8080
+
+# Set the working directory
+WORKDIR /app
+
+# Copy requirements and install dependencies
+COPY src/backend/requirements.txt ./requirements.txt
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Copy the backend
+COPY src/backend /app
+
+# Expose the port FASTAPI will run on
+EXPOSE $PORT
+
+# Use Gunicorn for production-ready server
+CMD ["gunicorn", "-w", "4", "-b", "0.0.0.0:8080", "app:app"]

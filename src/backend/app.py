@@ -1,11 +1,10 @@
 # main.py
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
-from typing import Dict, Any
+from typing import Dict
 import psycopg2
 import os
 from dotenv import load_dotenv
-from datetime import datetime
 
 load_dotenv()
 
@@ -13,6 +12,21 @@ app = FastAPI()
 
 # Pydantic Models
 class LevelData(BaseModel):
+# level
+#  -dimensions
+#   -x
+#   -y
+#  -sources
+#   -source
+#    -color
+#     -colorcode
+#    -coords
+#     -x
+#     -y
+#  -blockers
+#   -blocker
+#    -x
+#    -y
     dimensions: Dict[str, int]
     sources: Dict[str, Dict[str, Dict[str, int]]]
     blockers: Dict[str, Dict[str, int]]
