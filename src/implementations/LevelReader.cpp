@@ -28,7 +28,7 @@ FlowGrid readLevel(int level, sf::RenderWindow &window)
     cellExists.clear();
 
     // Open the level file
-    std::ifstream file(Defaults::HOME_DIR + "/src/levels/" + std::to_string(level) + ".txt");
+    std::ifstream file(Defaults::HOME_DIR + "/src/levels/base/" + std::to_string(level) + ".txt");
     if (!file.is_open())
     {
         // Handle file open error

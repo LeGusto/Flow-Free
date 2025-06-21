@@ -90,7 +90,7 @@ LevelSelection::~LevelSelection() = default;
 // Calculates the total number of levels by counting files in the "src/levels" directory
 void LevelSelection::calculateLevelCount()
 {
-    auto dirIter = std::filesystem::directory_iterator("src/levels");
+    auto dirIter = std::filesystem::directory_iterator("src/levels/base");
 
     unsigned short fileCount = std::count_if(
         begin(dirIter),
