@@ -71,9 +71,18 @@ int main()
                 else if (response != "")
                 {
                     // Load the selected level
-                    currLevel = std::stoi(response);                // Convert the response to an integer (level number)
-                    grid = std::move(readLevel(currLevel, window)); // Load the selected level
-                    gameState = GameState::PLAYING;                 // Transition to the gameplay screen
+                    currLevel = std::stoi(response); // Convert the response to an integer (level number)
+                    try
+                    {
+                        grid = std::move(readLevel(currLevel, window)); // Load the selected level
+                    }
+                    catch (const std::exception &e)
+                    {
+                        std::cerr << "Error loading level " << currLevel << ": " << e.what() << std::endl;
+                        continue; // Skip to the next iteration if level loading fails
+                    }
+
+                    gameState = GameState::PLAYING; // Transition to the gameplay screen
                 }
             }
             else if (gameState == GameState::PLAYING)

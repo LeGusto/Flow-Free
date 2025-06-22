@@ -20,6 +20,30 @@ std::vector<ColorNodes> colorNodes;
 // 2D vector to track whether a cell exists at a given position
 std::vector<std::vector<bool>> cellExists;
 
+// Verifies that each color node appears exactly twice in the grid
+bool verifyColorNodes()
+{
+    std::unordered_map<int, int> colorCount;
+
+    for (const auto &node : colorNodes)
+    {
+        int colorKey = node.color.toInteger(); // Use the color's integer representation as a key
+        ++colorCount[colorKey];                // Count occurrences of each color
+    }
+
+    for (auto [key, count] : colorCount)
+    {
+        // Return false if any color appears more than once
+        if (count != 2)
+        {
+            std::cerr << "Error: A color appears more than once." << std::endl;
+            return false;
+        }
+    }
+
+    return true;
+}
+
 // Reads a level file and constructs a FlowGrid object
 FlowGrid readLevel(int level, sf::RenderWindow &window)
 {
@@ -71,6 +95,12 @@ FlowGrid readLevel(int level, sf::RenderWindow &window)
         {
             file.ignore();
         }
+    }
+
+    if (!verifyColorNodes())
+    {
+
+        throw std::runtime_error("Invalid level file: color nodes verification failed.");
     }
 
     // Return a FlowGrid object initialized with the parsed data
